@@ -24,9 +24,19 @@ export class AuthService {
   ) {
     this.jwtConfig = this.configService.get("JWT_CONFIG") as IJWTConfig
   }
-
   async sendCode(dto: BarberOrClientDTO) {
+    const user = await this.userModel.findOne({ phone: dto.phone });
+
+    if (user && user.role !== dto.statusUser) {
+      throw new UnauthorizedException('User already registered with another role');
+    }
+
     const code = createRandomCode().toString();
+
+    await this.authSessionModel.updateMany(
+      { phone: dto.phone, verified: false },
+      { expiresAt: new Date() },
+    );
 
     const session = await this.authSessionModel.create({
       phone: dto.phone,
@@ -47,23 +57,26 @@ export class AuthService {
     );
 
     return {
-      message: 'Verification code sent',
+      message: user ? 'Login code sent' : 'Registration code sent',
       tempToken,
-      code,
+      code
     };
   }
 
+  
   async verifyCode(phone: string, code: string) {
-    const session = await this.authSessionModel.findOne({ phone, code });
+    const session = await this.authSessionModel.findOne({
+      phone,
+      code,
+      verified: false,
+    });
 
     if (!session || session.expiresAt < new Date()) {
       throw new UnauthorizedException('Invalid or expired code');
     }
 
-    await this.authSessionModel.updateOne(
-      { _id: session._id },
-      { verified: true },
-    );
+    session.verified = true;
+    await session.save();
 
     let user = await this.userModel.findOne({ phone });
 
@@ -88,5 +101,6 @@ export class AuthService {
 
     return { token };
   }
+
 
 }

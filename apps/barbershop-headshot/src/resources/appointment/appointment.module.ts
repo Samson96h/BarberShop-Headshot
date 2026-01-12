@@ -1,7 +1,7 @@
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
-import { Appointment, AppointmentSchema, User, UserSchema } from 'src/database';
+import { Appointment, AppointmentSchema, BarberServices, BarberServiceSchema, User, UserSchema } from 'src/database';
 import { AppointmentController } from './appointment.controller';
 import { AppointmentService } from './appointment.service';
 import { AuthModule } from '../auth/auth.module';
@@ -11,6 +11,7 @@ import { AuthModule } from '../auth/auth.module';
   imports: [
     AuthModule,
     MongooseModule.forFeature([
+      { name: BarberServices.name, schema: BarberServiceSchema },
       { name: Appointment.name, schema: AppointmentSchema },
       { name: User.name, schema: UserSchema}
     ]),

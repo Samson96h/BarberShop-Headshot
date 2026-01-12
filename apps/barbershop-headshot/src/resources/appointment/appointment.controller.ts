@@ -13,23 +13,26 @@ import { IdDTO } from 'src/dto';
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) { }
 
+  @Patch('/:id')
+  async acceptedOrRejected(@AuthUser('id') id: string, @Param() param: IdDTO, @Body() dto: AppointmentStatusDTO,) {
+    return this.appointmentService.acceptedOrRejected(id, param.id, dto);
+  }
+
+
   @Post()
   async createAppointment(@AuthUser('id') id: string, @Body() dto: CreateAppointmentDto) {
     return this.appointmentService.createAppointment(id, dto)
   }
+
 
   @Delete(':id')
   async removeAppointment(@AuthUser('id') id: string, @Param() param: IdDTO) {
     return this.appointmentService.removeAppointment(id, param.id)
   }
 
-  @Patch('id')
-  async acceptedOrRejected(@AuthUser('id') id: string, @Param() param: IdDTO, dto: AppointmentStatusDTO) {
-    return this.appointmentService.acceptedOrRejected(id, param.id, dto)
-  }
 
   @Get()
-  async getAppointmentForUser(@AuthUser('id') id: string){
+  async getAppointmentForUser(@AuthUser('id') id: string) {
     return this.appointmentService.getAppointmentsForUser(id)
   }
 
