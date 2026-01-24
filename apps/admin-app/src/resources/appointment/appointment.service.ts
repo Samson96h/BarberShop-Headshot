@@ -2,10 +2,8 @@ import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/commo
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
-import { CreateAppointmentDto } from "./dto/create-appointment.dto";
-import { AppointmentStatusDTO } from "./dto/appointment-status.dto";
-import { Appointment, User } from "../../../../../libs/common/src/database";
-import { status } from "../../../../../libs/common/src/database";
+import { Appointment, User } from "@app/common";
+import { status } from "@app/common";
 
 
 @Injectable()
@@ -15,15 +13,6 @@ export class AppointmentService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>
   ) { }
-
-  async createAppointment(clientId: string, dto: CreateAppointmentDto): Promise<Appointment> {
-    return this.appointmentModel.create({
-      client: clientId,
-      barber: dto.barberId,
-      service: dto.service,
-      date: dto.date
-    });
-  }
 
 
   async removeAppointment(clientId: string, appointmentId: string) {
@@ -40,25 +29,6 @@ export class AppointmentService {
     }
 
     throw new ForbiddenException("You cannot delete this appointment");
-  }
-
-  
-  async acceptedOrRejected(barberId: string, appointmentId: string, dto: AppointmentStatusDTO) {
-    const appointment = await this.appointmentModel.findOne({
-      _id: appointmentId,
-      barber: barberId,
-    });
-
-    if (!appointment) {
-      throw new ForbiddenException('You cannot update this appointment');
-    }
-
-    return this.appointmentModel.findByIdAndUpdate(
-      appointmentId,
-      { status: dto.status },
-      { new: true },
-    );
-
   }
 
 

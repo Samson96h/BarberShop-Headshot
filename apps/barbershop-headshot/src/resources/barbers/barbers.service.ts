@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BarberServices, User } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { BarberServices } from 'src/database/scema/barber-services.schema';
 import { CreateBarberServiceDto } from './dto/create-barber-service.dto';
 import { UpdateBarberServiceDto } from './dto/update-barber.dto';
-import { status, User } from 'src/database';
+import { status } from '@app/common';
+
 
 
 @Injectable()
@@ -37,6 +38,12 @@ export class BarbersService {
 
 
   async createService(userId: string, dto: CreateBarberServiceDto) {
+    const service = await this.barberModel.findOne({ user: userId })
+
+    if (service) {
+      throw new BadRequestException("You already have services, please either change the old ones or delete them and then add new ones.")
+    }
+
     return this.barberModel.create({ user: userId, ...dto })
   }
 
@@ -65,6 +72,6 @@ export class BarbersService {
   async getOneServices(userId: string) {
     return this.barberModel.findOne({ user: userId }).populate('user')
   }
-  
+
 
 }

@@ -4,19 +4,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 
-import { AuthSession, AuthSessionDocument } from 'src/database/scema/auth-session.schema';
 import { BarberOrClientDTO } from './dto/barber-or-client.dto';
-import { User } from 'src/database/scema/users';
-import { createRandomCode } from 'src/helpers';
-import { IJWTConfig } from 'src/models';
-
+import { AuthSession, AuthSessionDocument, User } from '../../../../../libs/common/src/database';
+import { createRandomCode } from '../../../../../libs/common/src/helpers';
+import { IJWTConfig } from '../../../../../libs/common/src/models';
 
 @Injectable()
 export class AuthService {
   private jwtConfig: IJWTConfig;
   constructor(
     @InjectModel(AuthSession.name)
-    private readonly authSessionModel: Model<AuthSessionDocument>,
+    private readonly authSessionModel: Model<AuthSession>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,

@@ -2,14 +2,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
-import { BarbersModule } from './resources/barbers/barbers.module';
 import { AppointmentModule } from './resources/appointment/appointment.module';
+import { mongoConfig } from '../../../libs/common/src/config/mongo.config';
+import { validationSchema } from '../../../libs/common/src/validation';
+import { BarbersModule } from './resources/barbers/barbers.module';
+import { jwtConfig } from '../../../libs/common/src/config';
 import { AuthModule } from './resources/auth/auth.module';
-import { mongoConfig } from './config/mongo.config';
 import { AppController } from './app.controller';
-import { validationSchema } from './validation';
 import { AppService } from './app.service';
-import { jwtConfig } from './config';
 
 @Module({
   imports: [

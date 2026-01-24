@@ -3,10 +3,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { CreateBarberServiceDto } from './dto/create-barber-service.dto';
 import { UpdateBarberServiceDto } from './dto/update-barber.dto';
 import { BarbersService } from './barbers.service';
-import { AuthUser } from 'src/decorators';
-import { AuthGuard } from 'src/guards';
-import { IdDTO } from 'src/dto';
-
+import { AuthUser } from '../../../../../libs/common/src/decorators';
+import { IdDTO } from '../../../../../libs/common/src/dto';
+import { AuthGuard } from '../../../../../libs/common/src/guards';
 
 @UseGuards(AuthGuard)
 @Controller('barbers')

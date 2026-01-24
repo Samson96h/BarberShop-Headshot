@@ -9,7 +9,11 @@ export class AuthSession {
     @Prop({ required: true })
     phone: string;
 
-    @Prop({ enum: status, required: true })
+    @Prop({
+        type: String,
+        enum: status,
+        required: true,
+    })
     status: status;
 
     @Prop({ required: true })

@@ -9,8 +9,14 @@ export class User {
   @Prop()
   name: string;
 
-  @Prop({ enum: status, required: true })
+  @Prop({
+    type: String,
+    enum: status,
+    required: true,
+    default: status.CLIENT,
+  })
   role: status;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

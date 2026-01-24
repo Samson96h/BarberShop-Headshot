@@ -3,10 +3,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { AppointmentStatusDTO } from './dto/appointment-status.dto';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentService } from './appointment.service';
-import { AuthUser } from 'src/decorators';
-import { AuthGuard } from 'src/guards';
-import { IdDTO } from 'src/dto';
-
+import { AuthUser } from '../../../../../libs/common/src/decorators';
+import { AuthGuard } from '../../../../../libs/common/src/guards';
+import { IdDTO } from '../../../../../libs/common/src/dto';
 
 @UseGuards(AuthGuard)
 @Controller('appointment')

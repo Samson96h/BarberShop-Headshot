@@ -2,12 +2,12 @@ import {CanActivate,ExecutionContext,Injectable,UnauthorizedException,} from '@n
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { JwtPayload } from './models';
-import { IJWTConfig } from 'src/models';
+import { IJWTConfig } from '@app/common/models';
+import { AdminJwtPayload } from './models';
 
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AdminAuthGuard implements CanActivate {
   private jwtConfig: IJWTConfig;
   constructor(
     private readonly jwtService: JwtService,
@@ -30,25 +30,19 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid authorization header format');
     }
 
-    let payload: JwtPayload;
+    let payload: AdminJwtPayload;
     
     try {
       payload = this.jwtService.verify(token, {
-        secret: this.jwtConfig.secret,
+        secret: this.jwtConfig.adminSecret,
       });
-    } catch (err1) {
-      try {
-        payload = this.jwtService.verify(token, {
-          secret: this.jwtConfig.tempSecret,
-        });
-      } catch (err2) {
-        throw new UnauthorizedException('User is not authorized');
-      }
+    } catch (err) {
+        throw new UnauthorizedException('Invalid or expired token');
     }
 
     request.user = {
       id: payload.sub,
-      phone: payload.phone,
+      name: payload.name,
       temp: payload.temp ?? false,
     };
 

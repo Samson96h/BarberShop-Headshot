@@ -1,10 +1,11 @@
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
+import { BarberServices, BarberServiceSchema, Appointment, AppointmentSchema, User, UserSchema } from '@app/common';
 import { AppointmentController } from './appointment.controller';
 import { AppointmentService } from './appointment.service';
 import { AuthModule } from '../auth/auth.module';
-import { BarberServices, BarberServiceSchema, Appointment, AppointmentSchema, User, UserSchema } from '../../../../../libs/common/src/database';
+
 
 
 @Module({

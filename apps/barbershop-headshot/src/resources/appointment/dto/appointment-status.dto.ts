@@ -1,5 +1,5 @@
+import { AppointmentStatus } from "@app/common/database/enums/appointment-status.enum";
 import { IsEnum, IsNotEmpty } from "class-validator";
-import { AppointmentStatus } from "src/database/enums/appointment-status.enum";
 
 export class AppointmentStatusDTO {
     @IsNotEmpty()

@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsPhoneNumber } from "class-validator";
-import { status } from "src/database";
+import { status } from "@app/common/database"; 
 
 export class BarberOrClientDTO {
 

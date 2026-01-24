@@ -3,8 +3,8 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { BarberOrClientDTO } from './dto/barber-or-client.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { AuthService } from './auth.service';
-import { AuthUser } from 'src/decorators';
-import { AuthGuard } from 'src/guards';
+import { AuthUser } from '../../../../../libs/common/src/decorators';
+import { AuthGuard } from '../../../../../libs/common/src/guards';
 
 
 @Controller('auth')

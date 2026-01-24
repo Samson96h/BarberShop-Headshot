@@ -1,7 +1,7 @@
 import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
-import { BarberServices, BarberServiceSchema, User, UserSchema } from '../../../../../libs/common/src/database';
+import { BarberServices, BarberServiceSchema, User, UserSchema } from '@app/common';
 import { BarbersController } from './barbers.controller';
 import { BarbersService } from './barbers.service';
 import { AuthModule } from '../auth/auth.module';
@@ -18,4 +18,4 @@ import { AuthModule } from '../auth/auth.module';
   controllers: [BarbersController],
   providers: [BarbersService],
 })
-export class BarbersModule {}
+export class BarbersServicesModule {}
