@@ -43,17 +43,26 @@ export class BarbersService {
     const existingService = await this.barberModel.findOne({ user: userId });
 
     if (existingService) {
-      throw new BadRequestException("You already have services.");
+      throw new BadRequestException("You already have service.");
     }
 
     if (file) {
       await this.handleImageUpload(userId, file);
     }
 
+    let portfolioPath
+
+    if (userId) {
+      const image = await this.imageModel
+        .findOne({ user: userId })
+        .lean();
+      portfolioPath = image ? image.path : null;
+    }
+
     return this.barberModel.create({ 
       user: new Types.ObjectId(userId),
-      ...dto 
-    });
+      ...dto
+    }, portfolioPath)
   }
 
   async updateService(userId: string, dto: UpdateBarberServiceDto, file?: Express.Multer.File) {
@@ -66,11 +75,20 @@ export class BarbersService {
       await this.handleImageUpload(userId, file);
     }
 
+    let portfolioPath
+
+    if (userId) {
+      const image = await this.imageModel
+        .findOne({ user: userId })
+        .lean();
+      portfolioPath = image ? image.path : null;
+    }
+
     return this.barberModel.findOneAndUpdate(
       { user: userId },
       { $set: dto },
       { new: true }
-    );
+    ), portfolioPath;
   }
 
   async findAllBarbers() {

@@ -1,11 +1,11 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
+import { AuthUser } from '../../../../../libs/common/src/decorators';
+import { AuthGuard } from '../../../../../libs/common/src/guards';
 import { BarberOrClientDTO } from './dto/barber-or-client.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { AuthService } from './auth.service';
-import { AuthUser } from '../../../../../libs/common/src/decorators';
-import { AuthGuard } from '../../../../../libs/common/src/guards';
-import { ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags('Auth')
@@ -18,6 +18,7 @@ export class AuthController {
     return this.authService.sendCode(dto);
   }
 
+  @ApiHeader({name: 'X-Auth-token',})
   @UseGuards(AuthGuard)
   @Post('verify-code')
   async verifyCode(@Body() dto: VerifyCodeDto, @AuthUser('phone') phone: string) {

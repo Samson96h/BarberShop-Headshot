@@ -1,6 +1,6 @@
 import { AppointmentStatus } from "@app/common/database/enums/appointment-status.enum";
-import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class AppointmentStatusDTO {
 

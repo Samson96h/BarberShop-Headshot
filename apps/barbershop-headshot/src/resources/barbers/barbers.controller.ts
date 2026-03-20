@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { PhotoValidationPipe } from '@app/common/shared/photoValidator/photo-validation.pipe';
 import { CreateBarberServiceDto } from './dto/create-barber-service.dto';
@@ -12,6 +12,7 @@ import { BarbersService } from './barbers.service';
 
 
 @ApiTags('Services')
+@ApiHeader({name: 'X-Auth-token',})
 @UseGuards(AuthGuard)
 @Controller('barbers')
 export class BarbersController {

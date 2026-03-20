@@ -19,7 +19,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder().setTitle('Nest Cource API').setDescription(
     'API documentation for nestjs cource').setVersion('1.0.0').setContact(
-      'Vazgen', 'vazge.locomotiv.ru', 'ooo@getPrismaClient.com').build()
+      'Samson', 'samsonhovhannisyan96@gmail.com', 'https://barber-shop-headshot.com').build()
 
   const document = SwaggerModule.createDocument(app, config)
 

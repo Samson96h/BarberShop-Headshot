@@ -1,14 +1,16 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
+import { AuthUser } from '../../../../../libs/common/src/decorators';
 import { AppointmentStatusDTO } from './dto/appointment-status.dto';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { AppointmentService } from './appointment.service';
-import { AuthUser } from '../../../../../libs/common/src/decorators';
 import { AuthGuard } from '../../../../../libs/common/src/guards';
 import { IdDTO } from '../../../../../libs/common/src/dto';
-import { ApiTags } from '@nestjs/swagger';
+import { AppointmentService } from './appointment.service';
+
 
 @ApiTags('Appointment')
+@ApiHeader({ name: 'X-Auth-token', })
 @UseGuards(AuthGuard)
 @Controller('appointment')
 export class AppointmentController {
