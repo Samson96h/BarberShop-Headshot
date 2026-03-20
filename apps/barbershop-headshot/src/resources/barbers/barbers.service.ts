@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { BarberServices, User, UserImage } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { v4 as uuid } from 'uuid';
 import { Model, Types } from 'mongoose';
+import { status } from '@app/common';
+import { v4 as uuid } from 'uuid';
 
 
 import { CreateBarberServiceDto } from './dto/create-barber-service.dto';
 import { UpdateBarberServiceDto } from './dto/update-barber.dto';
 import { S3Service } from '@app/common/shared/s3/s3.service';
-import { status } from '@app/common';
 
 
 
@@ -91,54 +91,6 @@ export class BarbersService {
     return barber;
   }
 
-
-  // async createService(userId: string, dto: CreateBarberServiceDto) {
-  //   const service = await this.barberModel.findOne({ user: userId })
-
-  //   if (service) {
-  //     throw new BadRequestException("You already have services, please either change the old ones or delete them and then add new ones.")
-  //   }
-
-  //   return this.barberModel.create({ user: userId, ...dto })
-  // }
-
-  // async updateService(userId: string, dto: UpdateBarberServiceDto, file?: Express.Multer.File) {
-  //   const service = await this.barberModel.findOne({ user: userId });
-  //   if (!service) {
-  //     throw new NotFoundException('Service not found');
-  //   }
-
-  //   if (file) {
-  //     const fileExtension = file.originalname.split('.').pop();
-  //     const fileName = `${uuid()}.${fileExtension}`;
-  //     const filePath = `barbershop/portfolios/${userId}/${fileName}`;
-  //     await this.s3Service.putObject(file.buffer, filePath, file.mimetype);
-
-
-  //     const existingImage = await this.imageModel.findOne({ user: userId });
-
-  //     if (existingImage) {
-
-  //       existingImage.path = filePath;
-  //       existingImage.size = file.size;
-  //       await existingImage.save();
-
-  //     } else {
-
-  //       await this.imageModel.create({
-  //         user: userId,
-  //         path: filePath,
-  //         size: file.size,
-  //       });
-  //     }
-  //   }
-
-  //   return this.barberModel.findOneAndUpdate(
-  //     { user: userId },
-  //     { $set: dto },
-  //     { new: true }
-  //   );
-  // }
 
   async removeService(userId: string) {
     const service = await this.barberModel.findOne({ user: userId })
