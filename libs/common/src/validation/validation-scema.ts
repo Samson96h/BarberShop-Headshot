@@ -7,6 +7,12 @@ export const validationSchema = Joi.object({
   MONGO_URI: Joi.string().required(),
   MONGO_DB_NAME: Joi.string().required(),
 
+
+  ACCSESSKEYID: Joi.string().required(),
+  SECRETACCESSKEY: Joi.string().required(),
+  REGION: Joi.string().required(),
+  BUCKET: Joi.string().required(),
+
   JWT_SECRET: Joi.string().required(),
   JWT_TEMP_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().required(),

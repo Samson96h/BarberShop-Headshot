@@ -51,19 +51,19 @@ export class UsersService {
   }
 
 
-  async deleteUser(userId: string): Promise<{ message }> {
-
-    const user = await this.userModel.findOne({ user: userId })
+  async deleteUser(userId: string) {
+    const user = await this.userModel.findById(userId);
 
     if (!user) {
-      throw new NotFoundException('user not found')
+      throw new NotFoundException('user not found');
     }
 
-    this.userModel.findOneAndDelete({ _id: userId })
+    user.isActive = false;
+    user.tokenVersion += 1;
 
-    return { message: 'user success deleted' }
+    await user.save();
 
+    return { message: 'user deleted and tokens revoked' };
   }
-
 
 }

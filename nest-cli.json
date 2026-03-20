@@ -1,14 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/barbershop-headshot/src",
-  "compilerOptions": {
-    "deleteOutDir": true,
-    "webpack": true,
-    "tsConfigPath": "apps/barbershop-headshot/tsconfig.app.json"
-  },
   "monorepo": true,
-  "root": "apps/barbershop-headshot",
+  "root": ".",
+  "compilerOptions": {
+    "deleteOutDir": true
+  },
   "projects": {
     "admin-app": {
       "type": "application",

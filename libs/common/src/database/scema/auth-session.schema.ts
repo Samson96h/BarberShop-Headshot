@@ -6,30 +6,32 @@ export type AuthSessionDocument = HydratedDocument<AuthSession>;
 
 @Schema({ timestamps: true })
 export class AuthSession {
-    @Prop({ required: true })
-    phone: string;
+  @Prop({ required: true })
+  phone: string;
 
-    @Prop({
-        type: String,
-        enum: status,
-        required: true,
-    })
-    status: status;
+  @Prop({
+    type: String,
+    enum: status,
+    required: true,
+  })
+  status: status;
 
-    @Prop({ required: true })
-    code: string;
+  @Prop({ required: true })
+  code: string;
 
-    @Prop({ required: true, default: new Date(Date.now() + 5 * 60 * 1000) })
-    expiresAt: Date;
+  @Prop({
+    type: Date,
+    default: () => new Date(Date.now() + 5 * 60 * 1000),
+  })
+  expiresAt: Date;
 
-    @Prop({ default: false })
-    verified: boolean;
+  @Prop({ default: false })
+  verified: boolean;
 }
 
-export const AuthSessionSchema =
-    SchemaFactory.createForClass(AuthSession);
+export const AuthSessionSchema = SchemaFactory.createForClass(AuthSession);
 
 AuthSessionSchema.index(
-    { expiresAt: 1 },
-    { expireAfterSeconds: 0 },
+  { expiresAt: 1 },
+  { expireAfterSeconds: 0 },
 );

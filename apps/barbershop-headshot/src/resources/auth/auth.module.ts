@@ -3,11 +3,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
+import { BarberServices, BarberServiceSchema, AuthSession, AuthSessionSchema, Appointment, AppointmentSchema, User, UserSchema } from '../../../../../libs/common/src/database';
+import { IJWTConfig } from '../../../../../libs/common/src/models';
+import { AuthGuard } from '../../../../../libs/common/src/guards';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { BarberServices, BarberServiceSchema, AuthSession, AuthSessionSchema, Appointment, AppointmentSchema, User, UserSchema } from '../../../../../libs/common/src/database';
-import { AuthGuard } from '../../../../../libs/common/src/guards';
-import { IJWTConfig } from '../../../../../libs/common/src/models';
 
 @Module({
   imports: [

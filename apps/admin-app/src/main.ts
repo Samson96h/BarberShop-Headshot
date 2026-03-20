@@ -5,6 +5,6 @@ async function bootstrap() {
   const PORT = process.env.PORT_ADMIN
   const app = await NestFactory.create(AdminAppModule);
   await app.listen(PORT ?? 3000);
-  console.log(PORT)
+  console.log(PORT, 'ADMIN')
 }
 bootstrap();

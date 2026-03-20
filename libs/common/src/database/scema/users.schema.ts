@@ -17,6 +17,11 @@ export class User {
   })
   role: status;
 
+  @Prop({ default: 0 })
+  tokenVersion: number;
+
+  @Prop({ default: true })
+  isActive: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

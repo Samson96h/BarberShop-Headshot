@@ -4,10 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 
-import { BarberOrClientDTO } from './dto/barber-or-client.dto';
-import { AuthSession, AuthSessionDocument, User } from '../../../../../libs/common/src/database';
+import { AuthSession, User } from '../../../../../libs/common/src/database';
 import { createRandomCode } from '../../../../../libs/common/src/helpers';
 import { IJWTConfig } from '../../../../../libs/common/src/models';
+import { BarberOrClientDTO } from './dto/barber-or-client.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,19 +22,23 @@ export class AuthService {
   ) {
     this.jwtConfig = this.configService.get("JWT_CONFIG") as IJWTConfig
   }
+
+  
+
   async sendCode(dto: BarberOrClientDTO) {
     const user = await this.userModel.findOne({ phone: dto.phone });
 
     if (user && user.role !== dto.statusUser) {
       throw new UnauthorizedException('User already registered with another role');
     }
-
     const code = createRandomCode().toString();
 
     await this.authSessionModel.updateMany(
-      { phone: dto.phone, verified: false },
-      { expiresAt: new Date() },
-    );
+  { phone: dto.phone, verified: false },
+  { expiresAt: new Date(Date.now() + 5 * 60 * 1000) },
+);
+
+
 
     const session = await this.authSessionModel.create({
       phone: dto.phone,
@@ -61,44 +65,48 @@ export class AuthService {
     };
   }
 
-  
-  async verifyCode(phone: string, code: string) {
-    const session = await this.authSessionModel.findOne({
-      phone,
-      code,
-      verified: false,
-    });
 
-    if (!session || session.expiresAt < new Date()) {
-      throw new UnauthorizedException('Invalid or expired code');
-    }
+async verifyCode(phone: string, code: string) {
+  const session = await this.authSessionModel.findOne({
+    phone,
+    code,
+    verified: false,
+  });
 
-    session.verified = true;
-    await session.save();
+  console.log('Session found:', session);
+  console.log('Session expiresAt:', session?.expiresAt);
+  console.log('Current time:', new Date());
 
-    let user = await this.userModel.findOne({ phone });
-
-    if (!user) {
-      user = await this.userModel.create({
-        phone,
-        role: session.status,
-      });
-    }
-
-    const token = this.jwtService.sign(
-      {
-        sub: user._id.toString(),
-        phone: user.phone,
-        role: user.role,
-      },
-      {
-        secret: this.jwtConfig.secret,
-        expiresIn: this.jwtConfig.expiresIn,
-      },
-    );
-
-    return { token };
+  if (!session || session.expiresAt < new Date()) {
+    throw new UnauthorizedException('Invalid or expired code');
   }
 
+  session.verified = true;
+  await session.save();
+
+  let user = await this.userModel.findOne({ phone });
+
+  if (!user) {
+    user = await this.userModel.create({
+      phone,
+      role: session.status,
+    });
+  }
+
+  const token = this.jwtService.sign(
+    {
+      sub: user._id.toString(),
+      phone: user.phone,
+      role: user.role,
+      tokenVersion: user.tokenVersion,
+    },
+    {
+      secret: this.jwtConfig.secret,
+      expiresIn: this.jwtConfig.expiresIn,
+    },
+  );
+
+  return { token };
+}
 
 }

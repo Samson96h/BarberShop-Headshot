@@ -1,12 +1,13 @@
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Module } from '@nestjs/common';
 
 import { AppointmentModule } from './resources/appointment/appointment.module';
+import { LoggerMiddleware } from '@app/common/middleware/logger.middleware';
 import { mongoConfig } from '../../../libs/common/src/config/mongo.config';
 import { validationSchema } from '../../../libs/common/src/validation';
+import { awsConfig, jwtConfig } from '../../../libs/common/src/config';
 import { BarbersModule } from './resources/barbers/barbers.module';
-import { jwtConfig } from '../../../libs/common/src/config';
 import { AuthModule } from './resources/auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,7 +17,7 @@ import { AppService } from './app.service';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema,
-      load: [mongoConfig, jwtConfig],
+      load: [mongoConfig, jwtConfig, awsConfig],
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
@@ -41,4 +42,6 @@ import { AppService } from './app.service';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) { consumer.apply(LoggerMiddleware).forRoutes('*'); }
+}

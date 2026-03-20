@@ -6,7 +6,9 @@ import { AppointmentService } from './appointment.service';
 import { AuthUser } from '../../../../../libs/common/src/decorators';
 import { AuthGuard } from '../../../../../libs/common/src/guards';
 import { IdDTO } from '../../../../../libs/common/src/dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Appointment')
 @UseGuards(AuthGuard)
 @Controller('appointment')
 export class AppointmentController {

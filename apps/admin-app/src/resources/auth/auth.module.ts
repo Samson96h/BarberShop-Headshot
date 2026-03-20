@@ -7,7 +7,7 @@ import { Admin, AdminSchema } from '@app/common/database/scema/admin.schema';
 import { AdminAuthGuard } from '@app/common/guards/admin-auth.guard';
 import { AuthController } from './auth.controller';
 import { IJWTConfig } from '@app/common/models';
-import { AuthService } from './auth.service';
+import { AuthService } from './auth.service'
 
 
 @Module({

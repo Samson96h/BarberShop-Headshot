@@ -4,52 +4,74 @@ import { JwtService } from '@nestjs/jwt';
 
 import { JwtPayload } from './models';
 import { IJWTConfig } from '../models';
-
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { User } from '../database';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   private jwtConfig: IJWTConfig;
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
   ) {
-    this.jwtConfig = this.configService.get("JWT_CONFIG") as IJWTConfig
+    this.jwtConfig = this.configService.get('JWT_CONFIG') as IJWTConfig;
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers['authorization'];
+    const req = context.switchToHttp().getRequest();
+    const auth = req.headers.authorization;
 
-    if (!authHeader) {
-      throw new UnauthorizedException('You are not authorized, please login');
-    }
+    if (!auth) throw new UnauthorizedException('No token');
 
-    const [bearer, token] = authHeader.trim().split(' ');
+    const [, token] = auth.split(' ');
 
-    if (bearer.toLowerCase() !== 'bearer' || !token) {
-      throw new UnauthorizedException('Invalid authorization header format');
-    }
+    let payload: any;
 
-    let payload: JwtPayload;
-    
+    // 1️⃣ Пробуем temp token
+    try {
+      payload = this.jwtService.verify(token, {
+        secret: this.jwtConfig.tempSecret,
+      });
+
+      if (!payload.temp) throw new Error();
+
+      // TEMP TOKEN FLOW
+      req.tempSession = {
+        sessionId: payload.sub,
+        phone: payload.phone,
+      };
+
+      return true;
+    } catch {}
+
+    // 2️⃣ Пробуем access token
     try {
       payload = this.jwtService.verify(token, {
         secret: this.jwtConfig.secret,
       });
-    } catch (err1) {
-      try {
-        payload = this.jwtService.verify(token, {
-          secret: this.jwtConfig.tempSecret,
-        });
-      } catch (err2) {
-        throw new UnauthorizedException('User is not authorized');
-      }
+    } catch {
+      throw new UnauthorizedException('Token invalid');
     }
 
-    request.user = {
-      id: payload.sub,
-      phone: payload.phone,
-      temp: payload.temp ?? false,
+    // ACCESS TOKEN FLOW
+    const user = await this.userModel.findById(payload.sub);
+
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('User inactive');
+    }
+
+    if (payload.tokenVersion !== user.tokenVersion) {
+      throw new UnauthorizedException('Token revoked');
+    }
+
+    req.user = {
+      id: user._id,
+      role: user.role,
+      phone: user.phone,
     };
 
     return true;
