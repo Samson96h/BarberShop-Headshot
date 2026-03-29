@@ -1,5 +1,7 @@
 import { registerAs } from "@nestjs/config";
+
 import { IAwsConfig } from "../models";
+
 
 export const awsConfig = registerAs("AWS_CONFIG", (): IAwsConfig => {
     return {

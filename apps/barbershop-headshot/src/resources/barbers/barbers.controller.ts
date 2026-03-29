@@ -4,15 +4,15 @@ import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { PhotoValidationPipe } from '@app/common/shared/photoValidator/photo-validation.pipe';
 import { CreateBarberServiceDto } from './dto/create-barber-service.dto';
-import { AuthUser } from '../../../../../libs/common/src/decorators';
-import { AuthGuard } from '../../../../../libs/common/src/guards';
 import { UpdateBarberServiceDto } from './dto/update-barber.dto';
-import { IdDTO } from '../../../../../libs/common/src/dto';
 import { BarbersService } from './barbers.service';
+import { AuthUser } from '@app/common/decorators';
+import { AuthGuard } from '@app/common/guards';
+import { IdDTO } from '@app/common/dto';
 
 
 @ApiTags('Services')
-@ApiHeader({name: 'X-Auth-token',})
+@ApiHeader({ name: 'X-Auth-token', })
 @UseGuards(AuthGuard)
 @Controller('barbers')
 export class BarbersController {

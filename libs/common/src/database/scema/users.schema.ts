@@ -1,5 +1,7 @@
 import { Prop, SchemaFactory, Schema } from "@nestjs/mongoose";
+
 import { status } from "../enums";
+
 
 @Schema({ timestamps: true })
 export class User {
@@ -17,11 +19,17 @@ export class User {
   })
   role: status;
 
-  @Prop({ default: 0 })
-  tokenVersion: number;
-
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop({ default: 0 })
+  temporaryBlockCount: number;
+
+  @Prop({ default: 0 })
+  permanentBlockCount: number;
+
+  @Prop({ type: Date, default: null })
+  blockedUntil: Date | null;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User)

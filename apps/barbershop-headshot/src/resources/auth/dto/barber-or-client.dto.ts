@@ -1,16 +1,19 @@
 import { IsEnum, IsNotEmpty, IsPhoneNumber } from "class-validator";
-import { status } from "@app/common/database"; 
 import { ApiProperty } from "@nestjs/swagger";
+
+import { status } from "@app/common/database";
+
 
 export class BarberOrClientDTO {
 
-    @ApiProperty({type: String, example: '+37493333333'})
+    @ApiProperty({ type: String, example: '+37493333333' })
     @IsNotEmpty()
     @IsPhoneNumber()
-    phone : string
+    phone: string
 
-    @ApiProperty({example: 'client', description: 'Are you a client or a barber?'})
+    @ApiProperty({ example: 'client', description: 'Are you a client or a barber?' })
     @IsEnum(status)
     @IsNotEmpty()
-    statusUser : status
+    statusUser: status
+    
 }

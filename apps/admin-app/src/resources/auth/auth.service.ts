@@ -23,7 +23,7 @@ export class AuthService {
     this.jwtConfig = this.configService.get("JWT_CONFIG") as IJWTConfig
   }
 
-  async adminLogin(dto: AdminLoginDTO):Promise<{message,token}> {
+  async adminLogin(dto: AdminLoginDTO): Promise<{ message, token }> {
     const admin = await this.adminModel.findOne({ login: dto.login })
 
     if (!admin) {
@@ -59,20 +59,20 @@ export class AuthService {
   }
 
 
-  async createAdmin(id: string, dto: CreateAdminDTO):Promise<Admin> {
-    const admin = await this.adminModel.findOne({_id: id})
+  async createAdmin(id: string, dto: CreateAdminDTO): Promise<Admin> {
+    const admin = await this.adminModel.findOne({ _id: id })
 
-    if(!admin) {
+    if (!admin) {
       throw new NotFoundException('admin not found')
     }
 
-    if(admin?._id.toString() != '696a46f211fdf25edaa8db0c'){
+    if (admin?._id.toString() != '696a46f211fdf25edaa8db0c') {
       throw new ForbiddenException("You do not have permission to create a new admin.")
     }
 
     return this.adminModel.create({
-      name:dto.name,
-      login:dto.login,
+      name: dto.name,
+      login: dto.login,
       password: await bcrypt.hash(dto.password, 12)
     })
   }

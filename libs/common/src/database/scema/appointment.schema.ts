@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
+
 import { AppointmentStatus } from '../enums/appointment-status.enum';
+
 
 @Schema({ timestamps: true })
 export class Appointment {

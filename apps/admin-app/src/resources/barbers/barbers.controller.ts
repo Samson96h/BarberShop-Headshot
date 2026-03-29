@@ -1,9 +1,8 @@
-import { AuthUser } from '@app/common/decorators';
 import { IdDTO } from '@app/common/dto';
 
-import { Controller, Get, Body, Param, Delete, UseGuards } from '@nestjs/common';
-import { BarbersService } from './barbers.service';
+import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from '@app/common/guards/admin-auth.guard';
+import { BarbersService } from './barbers.service';
 
 
 @UseGuards(AdminAuthGuard)
@@ -35,7 +34,7 @@ export class BarbersController {
   findOneBarber(@Param() param: IdDTO) {
     this.barbersService.findOneBarber(param.id)
     return {
-      message : 'The server has been successfully removed.'
+      message: 'The server has been successfully removed.'
     }
   }
 }

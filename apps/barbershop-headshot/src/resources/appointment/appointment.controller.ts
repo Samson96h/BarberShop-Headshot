@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { AuthUser } from '@app/common/decorators';
+import { IdDTO } from '@app/common/dto';
+import { AuthGuard } from '@app/common/guards';
 
-import { AuthUser } from '../../../../../libs/common/src/decorators';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AppointmentStatusDTO } from './dto/appointment-status.dto';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { AuthGuard } from '../../../../../libs/common/src/guards';
-import { IdDTO } from '../../../../../libs/common/src/dto';
 import { AppointmentService } from './appointment.service';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
+
 
 
 @ApiTags('Appointment')

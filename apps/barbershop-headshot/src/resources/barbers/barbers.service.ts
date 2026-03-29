@@ -38,7 +38,7 @@ export class BarbersService {
       { upsert: true, new: true }
     );
   }
-  
+
   async createService(userId: string, dto: CreateBarberServiceDto, file?: Express.Multer.File) {
     const existingService = await this.barberModel.findOne({ user: userId });
 
@@ -59,10 +59,13 @@ export class BarbersService {
       portfolioPath = image ? image.path : null;
     }
 
-    return this.barberModel.create({ 
+    const service = await this.barberModel.create({
       user: new Types.ObjectId(userId),
       ...dto
-    }, portfolioPath)
+    })
+    return {
+      service, portfolioPath
+    }
   }
 
   async updateService(userId: string, dto: UpdateBarberServiceDto, file?: Express.Multer.File) {

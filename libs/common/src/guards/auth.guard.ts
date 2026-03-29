@@ -1,25 +1,22 @@
-import {CanActivate,ExecutionContext,Injectable,UnauthorizedException,} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 
-import { JwtPayload } from './models';
-import { IJWTConfig } from '../models';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from '../database';
+import { TokenService } from '@app/common/redis/token/auth.token';
+
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  private jwtConfig: IJWTConfig;
-
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    @InjectModel(User.name)
-    private readonly userModel: Model<User>,
-  ) {
-    this.jwtConfig = this.configService.get('JWT_CONFIG') as IJWTConfig;
-  }
+    private readonly tokenService: TokenService,
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
@@ -31,47 +28,42 @@ export class AuthGuard implements CanActivate {
 
     let payload: any;
 
-    // 1️⃣ Пробуем temp token
     try {
       payload = this.jwtService.verify(token, {
-        secret: this.jwtConfig.tempSecret,
+        secret: this.configService.get('JWT_CONFIG').tempSecret,
       });
 
       if (!payload.temp) throw new Error();
 
-      // TEMP TOKEN FLOW
       req.tempSession = {
         sessionId: payload.sub,
         phone: payload.phone,
       };
 
       return true;
-    } catch {}
+    } catch { }
 
-    // 2️⃣ Пробуем access token
     try {
       payload = this.jwtService.verify(token, {
-        secret: this.jwtConfig.secret,
+        secret: this.configService.get('JWT_CONFIG').secret,
       });
     } catch {
       throw new UnauthorizedException('Token invalid');
     }
 
-    // ACCESS TOKEN FLOW
-    const user = await this.userModel.findById(payload.sub);
+    const isRevoked = await this.tokenService.isTokenRevoked(
+      payload.sub,
+      payload.iat,
+    );
 
-    if (!user || !user.isActive) {
-      throw new UnauthorizedException('User inactive');
-    }
-
-    if (payload.tokenVersion !== user.tokenVersion) {
+    if (isRevoked) {
       throw new UnauthorizedException('Token revoked');
     }
 
     req.user = {
-      id: user._id,
-      role: user.role,
-      phone: user.phone,
+      id: payload.sub,
+      role: payload.role,
+      phone: payload.phone,
     };
 
     return true;

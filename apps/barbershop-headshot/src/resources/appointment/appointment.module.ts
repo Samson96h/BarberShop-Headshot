@@ -13,10 +13,10 @@ import { AuthModule } from '../auth/auth.module';
     MongooseModule.forFeature([
       { name: BarberServices.name, schema: BarberServiceSchema },
       { name: Appointment.name, schema: AppointmentSchema },
-      { name: User.name, schema: UserSchema}
+      { name: User.name, schema: UserSchema }
     ]),
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService],
 })
-export class AppointmentModule {}
+export class AppointmentModule { }

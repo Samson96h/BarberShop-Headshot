@@ -1,5 +1,6 @@
 import { registerAs } from "@nestjs/config";
 
+
 export const jwtConfig = registerAs("JWT_CONFIG", () => {
   return {
     adminSecret: process.env.JWT_ADMIN_SECRET,

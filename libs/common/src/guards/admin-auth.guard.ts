@@ -1,4 +1,4 @@
-import {CanActivate,ExecutionContext,Injectable,UnauthorizedException,} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -31,13 +31,13 @@ export class AdminAuthGuard implements CanActivate {
     }
 
     let payload: AdminJwtPayload;
-    
+
     try {
       payload = this.jwtService.verify(token, {
         secret: this.jwtConfig.adminSecret,
       });
     } catch (err) {
-        throw new UnauthorizedException('Invalid or expired token');
+      throw new UnauthorizedException('Invalid or expired token');
     }
 
     request.user = {

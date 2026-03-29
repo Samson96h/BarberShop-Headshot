@@ -1,11 +1,11 @@
 import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Appointment, User } from "@app/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
-import { Appointment, User } from "../../../../../libs/common/src/database";
-import { CreateAppointmentDto } from "./dto/create-appointment.dto";
 import { AppointmentStatusDTO } from "./dto/appointment-status.dto";
-import { status } from "../../../../../libs/common/src/database";
+import { CreateAppointmentDto } from "./dto/create-appointment.dto";
+import { status } from '../../../../../libs/common/src/database'
 
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AppointmentService {
 
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
-  ) {}
+  ) { }
 
   async createAppointment(
     clientId: string,

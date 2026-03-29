@@ -33,7 +33,7 @@ export class BarbersService {
 
     return barber;
   }
-  
+
 
   async getAllServices() {
     return this.barberModel.find().populate('user')

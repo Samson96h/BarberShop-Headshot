@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Appointment, BarberServices, status, User } from '@app/common/database';
 import { Model } from 'mongoose';
+
+import { Appointment, BarberServices, status, User } from '@app/common/database';
+import { TokenService } from '@app/common/redis/token/auth.token';
+import { RedisService } from '@app/common/redis/redis.service';
+
 
 @Injectable()
 export class UsersService {
@@ -14,7 +18,11 @@ export class UsersService {
     private readonly barberServicesModel: Model<BarberServices>,
 
     @InjectModel(Appointment.name)
-    private readonly appointmentModel: Model<Appointment>
+    private readonly appointmentModel: Model<Appointment>,
+
+    private readonly tokenService: TokenService,
+
+    private readonly redisService: RedisService
 
   ) { }
 
@@ -59,11 +67,30 @@ export class UsersService {
     }
 
     user.isActive = false;
-    user.tokenVersion += 1;
+    await user.save();
+
+    await this.tokenService.blockUser(userId);
+
+    return { message: 'user deleted and tokens revoked' };
+  }
+
+  async unlockesUser(userId: string) {
+    const user = await this.userModel.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('user not found');
+    }
+
+    user.isActive = true
+    user.permanentBlockCount = 0
+    user.temporaryBlockCount = 0
+    user.blockedUntil = null
 
     await user.save();
 
-    return { message: 'user deleted and tokens revoked' };
+    await this.tokenService.unblockUser(userId)
+
+    return { message: 'The user has been successfully unblocked !' }
   }
 
 }

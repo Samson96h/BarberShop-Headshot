@@ -1,7 +1,8 @@
-import { Controller, Get, Body, Param, Delete, UseGuards } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Controller, Get, Body, Param, Delete, UseGuards, Post } from '@nestjs/common';
+
 import { AdminAuthGuard } from '@app/common/guards/admin-auth.guard';
 import { GetUsersDTO } from './dto/get-users.dto';
+import { UsersService } from './users.service';
 import { IdDTO } from '@app/common/dto';
 
 
@@ -25,6 +26,11 @@ export class UsersController {
     return this.usersService.deleteUser(param.id)
   }
 
+  @Post(':id')
+  async unlockedUser(@Param() param: IdDTO) {
+    return this.usersService.unlockesUser(param.id)
+  }
+
   @Get('clients')
   async getClients() {
     return this.usersService.getAllBarbers()
@@ -34,6 +40,5 @@ export class UsersController {
   async getBarbers() {
     return this.usersService.getAllBarbers()
   }
-
 
 }
