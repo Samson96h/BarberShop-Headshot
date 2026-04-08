@@ -11,6 +11,7 @@ import { UsersModule } from './resources/users/users.module';
 import { RedisModule } from '@app/common/redis/redis.module';
 import { jwtConfig, redisConfig } from '@app/common/config';
 import { AdminAppController } from './admin-app.controller';
+import { smtpConfig } from '@app/common/config/smtp-config';
 import { validationSchema } from '@app/common/validation';
 import { AuthModule } from './resources/auth/auth.module';
 import { AdminAppService } from './admin-app.service';
@@ -22,7 +23,7 @@ import { AdminAppService } from './admin-app.service';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema,
-      load: [mongoConfig, jwtConfig, redisConfig],
+      load: [mongoConfig, jwtConfig, redisConfig, smtpConfig],
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],

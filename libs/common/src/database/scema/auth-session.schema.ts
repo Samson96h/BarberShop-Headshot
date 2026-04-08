@@ -8,6 +8,10 @@ export type AuthSessionDocument = HydratedDocument<AuthSession>;
 
 @Schema({ timestamps: true })
 export class AuthSession {
+
+  @Prop({default: null})
+  email: string
+
   @Prop({ required: true })
   phone: string;
 

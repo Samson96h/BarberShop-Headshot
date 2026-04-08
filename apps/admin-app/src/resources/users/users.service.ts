@@ -2,9 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Appointment, BarberServices, status, User } from '@app/common/database';
 import { TokenService } from '@app/common/redis/token/auth.token';
-import { RedisService } from '@app/common/redis/redis.service';
+import { Appointment, status, User } from '@app/common/database';
 
 
 @Injectable()
@@ -14,15 +13,9 @@ export class UsersService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
 
-    @InjectModel(BarberServices.name)
-    private readonly barberServicesModel: Model<BarberServices>,
-
     @InjectModel(Appointment.name)
-    private readonly appointmentModel: Model<Appointment>,
 
-    private readonly tokenService: TokenService,
-
-    private readonly redisService: RedisService
+    private readonly tokenService: TokenService
 
   ) { }
 

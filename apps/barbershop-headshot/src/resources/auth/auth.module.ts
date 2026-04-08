@@ -11,10 +11,12 @@ import { AuthController } from './auth.controller';
 import { IJWTConfig } from '@app/common/models';
 import { AuthGuard } from '@app/common/guards';
 import { AuthService } from './auth.service';
+import { EmailModule } from 'libs/common/email/email.module';
 
 
 @Module({
   imports: [
+    EmailModule,
     RedisModule,
     ConfigModule,
     JwtModule.registerAsync({

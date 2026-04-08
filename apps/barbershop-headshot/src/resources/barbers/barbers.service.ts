@@ -2,9 +2,9 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { BarberServices, User, UserImage } from '@app/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import type { Multer } from 'multer';
 import { status } from '@app/common';
 import { v4 as uuid } from 'uuid';
-
 
 import { CreateBarberServiceDto } from './dto/create-barber-service.dto';
 import { UpdateBarberServiceDto } from './dto/update-barber.dto';

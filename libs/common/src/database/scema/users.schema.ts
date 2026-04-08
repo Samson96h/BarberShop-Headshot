@@ -5,11 +5,18 @@ import { status } from "../enums";
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true, unique: true })
-  phone: string;
+
+  @Prop({ type: String, default: null, unique: true })
+  email: string | null;
+
+  @Prop({ type: String, unique: true, default: null })
+  phone: string | null;
 
   @Prop()
-  name: string;
+  firstName: string;
+
+  @Prop()
+  lastName: string
 
   @Prop({
     type: String,
