@@ -1,11 +1,13 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { Appointment, User } from "@app/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 
-import { AppointmentStatusDTO } from "./dto/appointment-status.dto";
+import { endOrder, status } from '../../../../../libs/common/src/database'
 import { CreateAppointmentDto } from "./dto/create-appointment.dto";
-import { status } from '../../../../../libs/common/src/database'
+import { AppointmentStatusDTO } from "./dto/appointment-status.dto";
+import { SenderService } from "libs/common/email/sender.service";
+import { EndOfServiceDTO } from "./dto/end_of_service.dto";
 
 
 @Injectable()
@@ -17,7 +19,10 @@ export class AppointmentService {
 
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
+
+    private readonly senderService: SenderService
   ) { }
+
 
   async createAppointment(
     clientId: string,
@@ -31,6 +36,7 @@ export class AppointmentService {
       date: dto.date
     });
   }
+
 
   async removeAppointment(
     clientId: string,
@@ -52,28 +58,30 @@ export class AppointmentService {
     return this.appointmentModel.findByIdAndDelete(appointmentId);
   }
 
-  async acceptedOrRejected(
-    barberId: string,
-    appointmentId: string,
-    dto: AppointmentStatusDTO
-  ) {
+async acceptedOrRejected(
+  barberId: string,
+  appointmentId: string,
+  dto: AppointmentStatusDTO,
+) {
+  const appointment = await this.appointmentModel.findById(appointmentId);
 
-    const appointment = await this.appointmentModel
-      .findById(appointmentId)
-      .populate("barber");
-
-    if (!appointment) {
-      throw new NotFoundException("appointment not found");
-    }
-
-    if (appointment.barber.toString() !== barberId) {
-      throw new ForbiddenException("You cannot update this appointment");
-    }
-
-    appointment.status = dto.status;
-
-    return appointment.save();
+  if (!appointment) {
+    throw new NotFoundException('Appointment not found');
   }
+
+  if (!appointment.barber) {
+    throw new BadRequestException('Invalid appointment data');
+  }
+
+  if (appointment.barber.toString() !== barberId) {
+    throw new ForbiddenException('You cannot update this appointment');
+  }
+
+  appointment.status = dto.status;
+
+  return appointment.save();
+}
+
 
   async getAppointmentsForBarber(barberId: string): Promise<Appointment[]> {
 
@@ -82,11 +90,13 @@ export class AppointmentService {
       .populate("client")
   }
 
+
   async getAppointmentsForClient(clientId: string): Promise<Appointment[]> {
 
     return this.appointmentModel
       .find({ client: clientId })
   }
+
 
   async getAppointmentsForUser(userId: string) {
 
@@ -102,4 +112,51 @@ export class AppointmentService {
 
     return this.getAppointmentsForClient(userId);
   }
+
+async endOfOrder(barberId: string, dto: EndOfServiceDTO) {
+  const { appointmentId, result, priceOfWork } = dto;
+
+  const appointment = await this.appointmentModel
+    .findById(appointmentId)
+    .populate('client');
+
+  if (!appointment) {
+    throw new NotFoundException('Appointment not found!');
+  }
+
+  if (!appointment.barber) {
+    throw new BadRequestException('Invalid appointment');
+  }
+
+  if (appointment.barber.toString() !== barberId) {
+    throw new ForbiddenException('This appointment is not yours');
+  }
+
+  const price = result === endOrder.END ? priceOfWork : 0;
+
+  const updated = await this.appointmentModel.findByIdAndUpdate(
+    appointmentId,
+    {
+      $set: { end_of_order: result },
+    },
+    { new: true },
+  );
+
+  const client = appointment.client as any;
+
+  if (client.email) {
+    await this.senderService.sendEmail({
+      to: client.email,
+      from: process.env.SMTP_FROM || 'no-reply@example.com',
+      subject: 'Here is your receipt!',
+      template: 'service_receipt',
+      context: {
+        name: client.firstName || 'User',
+        price,
+      },
+    });
+  }
+
+  return updated;
+}
 }

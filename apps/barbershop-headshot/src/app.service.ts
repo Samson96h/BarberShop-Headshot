@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import { Injectable } from '@nestjs/common';
 import { Model, Document } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
 
-import { User } from '@app/common';
-import { IJWTConfig } from '@app/common/models';
-import { status } from '@app/common/database/enums';
-import { ConfigService } from '@nestjs/config';
 import { SenderService } from 'libs/common/email/sender.service';
+import { status } from '@app/common/database/enums';
+import { IJWTConfig } from '@app/common/models';
+import { ConfigService } from '@nestjs/config';
+import { User } from '@app/common';
+
 
 @Injectable()
 export class AppService {
@@ -59,7 +60,7 @@ export class AppService {
           subject: 'Добро пожаловать!',
           template: 'welcome-email',
           context: {
-            name: user.firstName || 'Пользователь',
+            name: user.firstName || 'User',
           },
         });
       }

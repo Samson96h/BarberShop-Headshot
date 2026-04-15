@@ -5,10 +5,12 @@ import { BarberServices, BarberServiceSchema, Appointment, AppointmentSchema, Us
 import { AppointmentController } from './appointment.controller';
 import { AppointmentService } from './appointment.service';
 import { AuthModule } from '../auth/auth.module';
+import { EmailModule } from 'libs/common/email/email.module';
 
 
 @Module({
   imports: [
+    EmailModule,
     AuthModule,
     MongooseModule.forFeature([
       { name: BarberServices.name, schema: BarberServiceSchema },

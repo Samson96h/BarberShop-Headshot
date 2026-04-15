@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
@@ -6,8 +6,11 @@ import { Model } from 'mongoose';
 
 import { BarberOrClientDTO } from './dto/barber-or-client.dto';
 import { createRandomCode } from '@app/common/helpers';
-import { User, AuthSession } from '@app/common';
+import { User, AuthSession, status } from '@app/common';
 import { IJWTConfig } from '@app/common/models';
+import { UsersModule } from 'apps/admin-app/src/resources/users/users.module';
+import { ChangeStatusDTO } from './dto/change-status.dto';
+import { SenderService } from 'libs/common/email/sender.service';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +19,7 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly senderService: SenderService,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     @InjectModel(AuthSession.name)
@@ -141,4 +145,31 @@ export class AuthService {
 
     return { token };
   }
+
+
+  async changeStatusUser(userId: string, dto: ChangeStatusDTO) {
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { $set: { role: dto.role } },
+      { returnDocument: 'after' }
+    );
+
+    if (!user) throw new NotFoundException('User not found !!!');
+
+    if (user.email) {
+      await this.senderService.sendEmail({
+        to: user.email,
+        from: process.env.SMTP_FROM || 'no-reply@example.com',
+        subject: 'Change--your--role !',
+        template: 'change_data',
+        context: {
+          role: user.role || 'User',
+        },
+      });
+    }
+
+
+    return user;
+  }
 }
+

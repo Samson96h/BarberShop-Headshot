@@ -5,16 +5,16 @@ import { validationSchema } from '@app/common/validation';
 
 import { AppointmentModule } from './resources/appointment/appointment.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { GoogleStrategy } from '@app/common/strategy/google.strategy';
 import { BarbersModule } from './resources/barbers/barbers.module';
+import { EmailModule } from 'libs/common/email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { smtpConfig } from '@app/common/config/smtp-config';
 import { AuthModule } from './resources/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { User, UserSchema } from '@app/common';
-import { GoogleStrategy } from '@app/common/strategy/google.strategy';
-import { EmailModule } from 'libs/common/email/email.module';
+import { AppService } from './app.service';
 
 
 @Module({

@@ -7,5 +7,5 @@ export class AppointmentStatusDTO {
     @ApiProperty({ description: 'Appointment status PENDING, ACCEPTED or REJECTED', example: 'pending' })
     @IsNotEmpty()
     @IsEnum(AppointmentStatus)
-    status: AppointmentStatus
+    status!: AppointmentStatus
 }

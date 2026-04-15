@@ -7,6 +7,7 @@ import { AppointmentStatusDTO } from './dto/appointment-status.dto';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentService } from './appointment.service';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { EndOfServiceDTO } from './dto/end_of_service.dto';
 
 
 
@@ -16,6 +17,13 @@ import { ApiHeader, ApiTags } from '@nestjs/swagger';
 @Controller('appointment')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) { }
+
+
+  @Patch('end-of-service')
+  async endOfOrder(@AuthUser('id') id: string, @Body() dto: EndOfServiceDTO) {
+    return this.appointmentService.endOfOrder(id, dto)
+  }
+  
 
   @Patch('/:id')
   async acceptedOrRejected(@AuthUser('id') id: string, @Param() param: IdDTO, @Body() dto: AppointmentStatusDTO,) {
@@ -39,5 +47,7 @@ export class AppointmentController {
   async getAppointmentForUser(@AuthUser('id') id: string) {
     return this.appointmentService.getAppointmentsForUser(id)
   }
+
+
 
 }

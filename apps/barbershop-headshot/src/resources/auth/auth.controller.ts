@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Patch } from '@nestjs/common';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '@app/common/decorators';
 import { AuthGuard } from '@app/common/guards';
@@ -6,6 +6,7 @@ import { AuthGuard } from '@app/common/guards';
 import { BarberOrClientDTO } from './dto/barber-or-client.dto';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { AuthService } from './auth.service';
+import { ChangeStatusDTO } from './dto/change-status.dto';
 
 
 @ApiTags('Auth')
@@ -23,5 +24,14 @@ export class AuthController {
   @Post('verify-code')
   async verifyCode(@Body() dto: VerifyCodeDto, @AuthUser('phone') phone: string) {
     return this.authService.verifyCode(phone, dto.code);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('change-status')
+  changeStatusUser(
+    @AuthUser('id') id: string,
+    @Body() dto: ChangeStatusDTO
+  ) {
+    return this.authService.changeStatusUser(id, dto);
   }
 }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f7;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #333333;
+    }
+
+    .wrapper {
+      width: 100%;
+      padding: 40px 0;
+      background-color: #f4f4f7;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      background: #111827;
+      padding: 28px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .content {
+      padding: 35px 30px;
+      line-height: 1.7;
+    }
+
+    .content h2 {
+      margin-top: 0;
+      font-size: 22px;
+      color: #111827;
+    }
+
+    .price-box {
+      margin: 25px 0;
+      background: #f9fafb;
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .price-label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .price-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #16a34a;
+    }
+
+    .footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #9ca3af;
+      background: #f9fafb;
+    }
+
+    .thank-you {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #111827;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="container">
+
+      <div class="header">
+        <h1>Service Receipt</h1>
+      </div>
+
+      <div class="content">
+        <h2>Hello, {{name}} 👋</h2>
+
+        <p>
+          Thank you for choosing our service. Your appointment has been successfully completed.
+        </p>
+
+        <div class="price-box">
+          <div class="price-label">Total Amount</div>
+          <div class="price-value">֏{{price}}</div>
+        </div>
+
+        <p>
+          We truly appreciate your trust and look forward to seeing you again soon.
+        </p>
+
+        <p class="thank-you">
+          Thanks for being with us!
+        </p>
+      </div>
+
+      <div class="footer">
+        © 2026 Your Company. All rights reserved.
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
