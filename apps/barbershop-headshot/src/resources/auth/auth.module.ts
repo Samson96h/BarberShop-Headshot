@@ -7,11 +7,12 @@ import { BarberServices, BarberServiceSchema, AuthSession, AuthSessionSchema, Ap
 import { TokenService } from '@app/common/redis/token/auth.token';
 import { RedisService } from '@app/common/redis/redis.service';
 import { RedisModule } from '@app/common/redis/redis.module';
+import { EmailModule } from 'libs/common/email/email.module';
 import { AuthController } from './auth.controller';
 import { IJWTConfig } from '@app/common/models';
 import { AuthGuard } from '@app/common/guards';
+import { AuthMongoRepository } from './repositories';
 import { AuthService } from './auth.service';
-import { EmailModule } from 'libs/common/email/email.module';
 
 
 @Module({
@@ -44,9 +45,13 @@ import { EmailModule } from 'libs/common/email/email.module';
     TokenService,
     RedisService,
     AuthService,
-    AuthGuard
+    AuthGuard,
+    {
+      provide: 'AUTH_REPOSITORY',
+      useClass: AuthMongoRepository
+    }
   ],
   controllers: [AuthController],
-  exports: [AuthGuard, JwtModule, TokenService],
+  exports: [AuthGuard, JwtModule, TokenService, AuthService],
 })
 export class AuthModule { }

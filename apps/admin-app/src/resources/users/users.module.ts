@@ -1,21 +1,18 @@
-import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
-import { Appointment, AppointmentSchema, BarberServices, BarberServiceSchema, User, UserSchema } from '@app/common';
 import { TokenService } from '@app/common/redis/token/auth.token';
 import { UsersController } from './users.controller';
 import { AuthModule } from '../auth/auth.module';
 import { UsersService } from './users.service';
+import { UserEntity, AppointmentEntity, BarberServiceEntity, AdminEntity } from '@app/common/database/entities';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserSecurityEntity } from '@app/common/database/entities/user.secutity.entity';
 
 
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Appointment.name, schema: AppointmentSchema },
-      { name: BarberServices.name, schema: BarberServiceSchema }
-    ]),
+    TypeOrmModule.forFeature([UserEntity, AppointmentEntity, BarberServiceEntity, UserSecurityEntity, AdminEntity]),
   ],
   controllers: [UsersController],
   providers: [UsersService, TokenService],

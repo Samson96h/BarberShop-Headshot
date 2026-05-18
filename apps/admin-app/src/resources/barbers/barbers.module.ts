@@ -1,19 +1,16 @@
-import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
-import { BarberServices, BarberServiceSchema, User, UserSchema } from '@app/common';
 import { BarbersController } from './barbers.controller';
 import { BarbersService } from './barbers.service';
 import { AuthModule } from '../auth/auth.module';
+import { UserEntity, AppointmentEntity, BarberServiceEntity } from '@app/common/database/entities';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forFeature([
-      { name: BarberServices.name, schema: BarberServiceSchema },
-      { name: User.name, schema: UserSchema}
-    ]),
+    TypeOrmModule.forFeature([UserEntity, AppointmentEntity, BarberServiceEntity]),
   ],
   controllers: [BarbersController],
   providers: [BarbersService],

@@ -27,8 +27,13 @@ export const validationSchema = Joi.object({
   SMTP_SECURE: Joi.string().required(),
   SMTP_USER: Joi.string().required(),
   SMTP_PASS: Joi.string().required(),
-  
+
   GOOGLE_CLIENT_ID: Joi.string().required(),
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
   GOOGLE_CALLBACK_URL: Joi.string().required(),
+
+  DATABASE_NAME: Joi.string().required(),
+  DATABASE_HOST: Joi.string().required(),
+  DATABASE_PORT: Joi.number().required(),
+  DATABASE_USER: Joi.string().required()
 });

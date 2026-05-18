@@ -7,16 +7,16 @@ import { status } from "../enums";
 export class User {
 
   @Prop({ type: String, default: null, unique: true })
-  email: string | null;
+  email!: string | null;
 
   @Prop({ type: String, unique: true, default: null })
-  phone: string | null;
+  phone!: string | null;
 
   @Prop()
-  firstName: string;
+  firstName?: string;
 
   @Prop()
-  lastName: string
+  lastName?: string
 
   @Prop({
     type: String,
@@ -24,19 +24,19 @@ export class User {
     required: true,
     default: status.CLIENT,
   })
-  role: status;
+  role!: status;
 
   @Prop({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @Prop({ default: 0 })
-  temporaryBlockCount: number;
+  temporaryBlockCount!: number;
 
   @Prop({ default: 0 })
-  permanentBlockCount: number;
+  permanentBlockCount!: number;
 
   @Prop({ type: Date, default: null })
-  blockedUntil: Date | null;
+  blockedUntil!: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

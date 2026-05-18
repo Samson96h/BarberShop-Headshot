@@ -1,20 +1,20 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
-import { Admin } from '@app/common/database';
+import { AdminEntity } from '@app/common/database/entities';
 
 @Injectable()
 export class AdminSeed implements OnModuleInit {
   constructor(
-    @InjectModel(Admin.name)
-    private readonly adminModel: Model<Admin>,
-  ) { }
+    @InjectRepository(AdminEntity)
+    private readonly adminRepository: Repository<AdminEntity>,
+  ) {}
 
   async onModuleInit() {
-    const existingAdmin = await this.adminModel.findOne({
-      login: 'admin001',
+    const existingAdmin = await this.adminRepository.findOne({
+      where: { login: 'admin001' },
     });
 
     if (existingAdmin) {
@@ -24,7 +24,7 @@ export class AdminSeed implements OnModuleInit {
 
     const hashedPassword = await bcrypt.hash('111111', 12);
 
-    await this.adminModel.create({
+    await this.adminRepository.save({
       name: 'Super Admin',
       login: 'admin001',
       password: hashedPassword,

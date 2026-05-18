@@ -10,29 +10,29 @@ export type AuthSessionDocument = HydratedDocument<AuthSession>;
 export class AuthSession {
 
   @Prop({default: null})
-  email: string
+  email?: string
 
   @Prop({ required: true })
-  phone: string;
+  phone?: string;
 
   @Prop({
     type: String,
     enum: status,
     required: true,
   })
-  status: status;
+  status!: status;
 
   @Prop({ required: true })
-  code: string;
+  code!: string;
 
   @Prop({
     type: Date,
     default: () => new Date(Date.now() + 5 * 60 * 1000),
   })
-  expiresAt: Date;
+  expiresAt!: Date;
 
   @Prop({ default: false })
-  verified: boolean;
+  verified!: boolean;
 }
 
 export const AuthSessionSchema = SchemaFactory.createForClass(AuthSession);

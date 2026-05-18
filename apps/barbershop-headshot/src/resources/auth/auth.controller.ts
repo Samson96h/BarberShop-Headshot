@@ -3,10 +3,8 @@ import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from '@app/common/decorators';
 import { AuthGuard } from '@app/common/guards';
 
-import { BarberOrClientDTO } from './dto/barber-or-client.dto';
-import { VerifyCodeDto } from './dto/verify-code.dto';
+import { BarberOrClientDTO, VerifyCodeDto, ChangeStatusDTO } from './dto';
 import { AuthService } from './auth.service';
-import { ChangeStatusDTO } from './dto/change-status.dto';
 
 
 @ApiTags('Auth')
@@ -22,8 +20,8 @@ export class AuthController {
   @ApiHeader({ name: 'X-Auth-token', })
   @UseGuards(AuthGuard)
   @Post('verify-code')
-  async verifyCode(@Body() dto: VerifyCodeDto, @AuthUser('phone') phone: string) {
-    return this.authService.verifyCode(phone, dto.code);
+  async verifyCode(@AuthUser('phone') phone: string, @Body() dto: VerifyCodeDto,) {
+    return this.authService.verifyCode(phone, dto);
   }
 
   @UseGuards(AuthGuard)

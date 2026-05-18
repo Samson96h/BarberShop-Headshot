@@ -1,13 +1,13 @@
-import { AuthUser } from '@app/common/decorators';
-import { IdDTO } from '@app/common/dto';
-import { AuthGuard } from '@app/common/guards';
+import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { AppointmentStatusDTO } from './dto/appointment-status.dto';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AppointmentService } from './appointment.service';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { EndOfServiceDTO } from './dto/end_of_service.dto';
+import { AuthUser } from '@app/common/decorators';
+import { AuthGuard } from '@app/common/guards';
+import { IdDTO } from '@app/common/dto';
 
 
 
@@ -23,7 +23,7 @@ export class AppointmentController {
   async endOfOrder(@AuthUser('id') id: string, @Body() dto: EndOfServiceDTO) {
     return this.appointmentService.endOfOrder(id, dto)
   }
-  
+
 
   @Patch('/:id')
   async acceptedOrRejected(@AuthUser('id') id: string, @Param() param: IdDTO, @Body() dto: AppointmentStatusDTO,) {

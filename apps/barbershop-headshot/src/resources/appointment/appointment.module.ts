@@ -6,6 +6,7 @@ import { AppointmentController } from './appointment.controller';
 import { AppointmentService } from './appointment.service';
 import { AuthModule } from '../auth/auth.module';
 import { EmailModule } from 'libs/common/email/email.module';
+import { AppointmentMongoRepository } from './repositories/appointment-mongo.repository';
 
 
 @Module({
@@ -19,6 +20,11 @@ import { EmailModule } from 'libs/common/email/email.module';
     ]),
   ],
   controllers: [AppointmentController],
-  providers: [AppointmentService],
+  providers: [AppointmentService,
+    {
+      provide: 'APPOINTMENT_REPOSITORY',
+      useClass: AppointmentMongoRepository,
+    }],
+  exports: [AppointmentService]
 })
 export class AppointmentModule { }

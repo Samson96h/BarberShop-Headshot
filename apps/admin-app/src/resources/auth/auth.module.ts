@@ -9,11 +9,14 @@ import { AuthController } from './auth.controller';
 import { IJWTConfig } from '@app/common/models';
 import { AuthService } from './auth.service';
 import { AdminSeed } from '../../seed';
+import { AdminEntity, AppointmentEntity, BarberServiceEntity, UserEntity } from '@app/common/database/entities';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 
 @Module({
   imports: [
     ConfigModule,
+    TypeOrmModule.forFeature([UserEntity, AppointmentEntity, BarberServiceEntity, AdminEntity]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -27,10 +30,7 @@ import { AdminSeed } from '../../seed';
           signOptions: { expiresIn: jwt.expiresIn },
         };
       },
-    }),
-    MongooseModule.forFeature([
-      { name: Admin.name, schema: AdminSchema }
-    ]),
+    })
   ],
   controllers: [AuthController],
   providers: [AuthService, AdminAuthGuard, AdminSeed],

@@ -4,6 +4,7 @@ import { AdminAuthGuard } from '@app/common/guards/admin-auth.guard';
 import { GetUsersDTO } from './dto/get-users.dto';
 import { UsersService } from './users.service';
 import { IdDTO } from '@app/common/dto';
+import { AuthUser } from '@app/common/decorators';
 
 
 @UseGuards(AdminAuthGuard)
@@ -11,9 +12,10 @@ import { IdDTO } from '@app/common/dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Get()
-  async getUsers(@Body() dto: GetUsersDTO) {
-    return this.usersService.getAllUsers(dto.role)
+
+  @Get("admins")
+  async getAllAdmins(@AuthUser('id') adminId: string) {
+    return this.usersService.getAllAdmins(adminId)
   }
 
   @Get(":id")

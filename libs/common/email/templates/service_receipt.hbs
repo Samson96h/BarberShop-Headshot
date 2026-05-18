@@ -1,127 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Service Receipt</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f7;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #333333;
-    }
+<style>
+body{
+  margin:0;
+  padding:0;
+  background:#f3f4f6;
+  font-family:Arial,sans-serif;
+  color:#111827;
+}
 
-    .wrapper {
-      width: 100%;
-      padding: 40px 0;
-      background-color: #f4f4f7;
-    }
+.wrapper{
+  padding:40px 12px;
+}
 
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
+.container{
+  max-width:620px;
+  margin:0 auto;
+  background:#ffffff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 35px rgba(0,0,0,.12);
+}
 
-    .header {
-      background: #111827;
-      padding: 28px;
-      text-align: center;
-      color: #ffffff;
-    }
+.header{
+  background:linear-gradient(135deg,#111827,#1f2937);
+  padding:28px;
+  text-align:center;
+  color:#ffffff;
+}
 
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-    }
+.header h1{
+  margin:10px 0 0;
+}
 
-    .content {
-      padding: 35px 30px;
-      line-height: 1.7;
-    }
+.badge{
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:999px;
+  background:#ffffff;
+  color:#111827;
+  font-size:12px;
+  font-weight:bold;
+  letter-spacing:.08em;
+}
 
-    .content h2 {
-      margin-top: 0;
-      font-size: 22px;
-      color: #111827;
-    }
+.hero{
+  padding:28px;
+  text-align:center;
+  background:radial-gradient(circle at top,#fff7cc,#ffe08a);
+}
 
-    .price-box {
-      margin: 25px 0;
-      background: #f9fafb;
-      border: 2px dashed #d1d5db;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-    }
+.hero img{
+  width:240px;
+  max-width:100%;
+  border-radius:14px;
+  display:block;
+  margin:0 auto;
+}
 
-    .price-label {
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 8px;
-    }
+.content{
+  padding:32px;
+}
 
-    .price-value {
-      font-size: 32px;
-      font-weight: bold;
-      color: #16a34a;
-    }
+.content h2{
+  margin-top:0;
+}
 
-    .footer {
-      padding: 20px;
-      text-align: center;
-      font-size: 13px;
-      color: #9ca3af;
-      background: #f9fafb;
-    }
+.price{
+  margin:24px 0;
+  padding:22px;
+  border-radius:14px;
+  background:#f9fafb;
+  border:2px dashed #d1d5db;
+  text-align:center;
+}
 
-    .thank-you {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #111827;
-    }
-  </style>
+.value{
+  font-size:34px;
+  font-weight:700;
+  color:#16a34a;
+}
+
+.footer{
+  padding:18px;
+  text-align:center;
+  font-size:12px;
+  color:#6b7280;
+  background:#f9fafb;
+}
+</style>
 </head>
 
 <body>
-  <div class="wrapper">
-    <div class="container">
 
-      <div class="header">
-        <h1>Service Receipt</h1>
-      </div>
+<div class="wrapper">
+<div class="container">
 
-      <div class="content">
-        <h2>Hello, {{name}} 👋</h2>
+<div class="header">
+<div class="badge">SERVICE COMPLETED</div>
+<h1>Your Receipt</h1>
+</div>
 
-        <p>
-          Thank you for choosing our service. Your appointment has been successfully completed.
-        </p>
+<div class="hero">
+<img src="https://media1.tenor.com/m/_2gmzwgSnLEAAAAd/hairdresser-barber.gif" alt="Man getting bald haircut">
+</div>
 
-        <div class="price-box">
-          <div class="price-label">Total Amount</div>
-          <div class="price-value">֏{{price}}</div>
-        </div>
+<div class="content">
 
-        <p>
-          We truly appreciate your trust and look forward to seeing you again soon.
-        </p>
+<h2>Hello, {{name}} 👋</h2>
 
-        <p class="thank-you">
-          Thanks for being with us!
-        </p>
-      </div>
+<p>
+Your appointment has been successfully completed.
+Looks like the barber went all in today 😄
+</p>
 
-      <div class="footer">
-        © 2026 Your Company. All rights reserved.
-      </div>
+<div class="price">
+<div>Total Amount</div>
+<div class="value">֏{{price}}</div>
+</div>
 
-    </div>
-  </div>
+<p>
+Thank you for choosing us. We look forward to seeing you again soon.
+</p>
+
+<p><strong>Fresh cut. Clean style. Legendary result.</strong></p>
+
+</div>
+
+<div class="footer">
+© 2026 Your Company. All rights reserved.
+</div>
+
+</div>
+</div>
+
 </body>
 </html>
