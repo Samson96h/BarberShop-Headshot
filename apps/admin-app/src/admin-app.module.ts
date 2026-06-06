@@ -8,6 +8,8 @@ import { UserSecurityEntity } from '@app/common/database/entities/user.secutity.
 import { AppointmentModule } from './resources/appointment/appointment.module';
 import { LoggerMiddleware } from '@app/common/middleware/logger.middleware';
 import { BarbersServicesModule } from './resources/barbers/barbers.module';
+import { TranslationExceptionFilter } from '@app/common/exception_filter';
+import { TranslationService } from '@app/common/i18n/TranslationService';
 import { dbConfig, jwtConfig, redisConfig } from '@app/common/config';
 import { TokenService } from '@app/common/redis/token/auth.token';
 import { UsersModule } from './resources/users/users.module';
@@ -58,7 +60,8 @@ import { IDBConfig } from '@app/common/models';
     BarbersServicesModule
   ],
   controllers: [AdminAppController],
-  providers: [AdminAppService, TokenService]
+  providers: [AdminAppService, TokenService, TranslationExceptionFilter, TranslationService],
+  exports: [TranslationExceptionFilter]
 })
 
 export class AdminAppModule implements NestModule {

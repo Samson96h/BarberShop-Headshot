@@ -1,29 +1,25 @@
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
-import { BarberServices, BarberServiceSchema, Appointment, AppointmentSchema, User, UserSchema } from '../../../../../libs/common/src/database';
+import { UserEntity, AppointmentEntity, BarberServiceEntity } from '@app/common/database/entities';
+import { AppointmentPostgreRepository } from './repositories/appointment-postgre.repository';
 import { AppointmentController } from './appointment.controller';
+import { EmailModule } from 'libs/common/email/email.module';
 import { AppointmentService } from './appointment.service';
 import { AuthModule } from '../auth/auth.module';
-import { EmailModule } from 'libs/common/email/email.module';
-import { AppointmentMongoRepository } from './repositories/appointment-mongo.repository';
 
 
 @Module({
   imports: [
     EmailModule,
     AuthModule,
-    MongooseModule.forFeature([
-      { name: BarberServices.name, schema: BarberServiceSchema },
-      { name: Appointment.name, schema: AppointmentSchema },
-      { name: User.name, schema: UserSchema }
-    ]),
+    TypeOrmModule.forFeature([UserEntity, AppointmentEntity, BarberServiceEntity]),
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService,
     {
       provide: 'APPOINTMENT_REPOSITORY',
-      useClass: AppointmentMongoRepository,
+      useClass: AppointmentPostgreRepository,
     }],
   exports: [AppointmentService]
 })

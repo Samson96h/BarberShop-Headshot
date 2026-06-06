@@ -1,50 +1,53 @@
-import { Column, Entity, JoinTable, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+
 import { AppointmentEntity } from './appointments-entity';
 import { BarberServiceEntity } from './barber-services.entity';
-import { Base } from './base';
-import { MediaFilesEntity } from './media-files';
-import { status, userStatus } from '../enums';
 import { UserSecurityEntity } from './user.secutity.entity';
+import { MediaFilesEntity } from './media-files';
+import { Base } from './base';
+
+import { status, userStatus } from '../enums';
+import { SecretCode } from './secret-code';
+
 
 @Entity('users')
 export class UserEntity extends Base {
-    @Column({
-        type: 'varchar',
-        unique: true,
-        nullable: true,
-    })
-    email: string | null;
 
     @Column({
         type: 'varchar',
         unique: true,
         nullable: true,
     })
-    phone: string | null;
+    email!: string | null;
+
+    @Column({
+        type: 'varchar',
+        unique: true,
+        nullable: true,
+    })
+    phone!: string | null;
 
     @Column({ nullable: true })
-    firstName: string;
+    firstName!: string;
 
     @Column({ nullable: true })
-    lastName: string;
-
-    secretCodes: any;
+    lastName!: string;
 
     @Column({
         type: 'enum',
         enum: status,
         default: status.CLIENT,
     })
-    role: status;
+    role!: status;
 
-    @Column({ default: true })
-    isActive: boolean;
+    @Column({ type: 'enum', enum: userStatus, default: userStatus.ACTIVE })
+    status!: userStatus;
 
-    @Column({
-        type: 'timestamp',
-        nullable: true,
-    })
-    blockedUntil: Date | null;
+    @OneToMany(() => SecretCode, (code) => code.user)
+    secretCodes!: SecretCode[];
+
+    @OneToOne(() => UserSecurityEntity, (userSecurity) => userSecurity.user, { cascade: true })
+    security?: UserSecurityEntity;
 
     @OneToMany(() => AppointmentEntity, (appointment) => appointment.client)
     clientAppointments: AppointmentEntity[];
@@ -53,20 +56,10 @@ export class UserEntity extends Base {
     barberProfile: BarberServiceEntity;
 
     @OneToOne(() => MediaFilesEntity, { cascade: true })
-    @JoinTable({
-        name: 'user_media_files',
-        joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-        inverseJoinColumn: { name: 'media_file_id', referencedColumnName: 'id' },
-    })
-    mediaFiles: MediaFilesEntity
+    @JoinColumn()
+    mediaFiles: MediaFilesEntity;
 
-    @Column({
-        type: 'enum',
-        enum: userStatus,
-        default: userStatus.ACTIVE,
-    })
-    status: userStatus;
+    @Column({ default: true })
+    isActive: boolean
 
-    @OneToOne(() => UserSecurityEntity, (userSecurity) => userSecurity.user)
-    security: UserSecurityEntity
 }

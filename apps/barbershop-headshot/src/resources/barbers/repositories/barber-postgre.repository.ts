@@ -7,141 +7,93 @@ import { CreateBarberServiceDto } from "../dto/create-barber-service.dto";
 import { MediaPostgreService } from "../services/media-postgre.service";
 import { IBarberRepository } from "../interfaces/barber.repository";
 import { UpdateBarberServiceDto } from "../dto/update-barber.dto";
-import { status } from "@app/common";
+import { status, User } from "@app/common";
 
 
 @Injectable()
 export class BarberPostgreRepository implements IBarberRepository {
     constructor(
         @InjectRepository(BarberServiceEntity)
-        private readonly barberRepo: Repository<BarberServiceEntity>,
+        private readonly barberRepository: Repository<BarberServiceEntity>,
 
         @InjectRepository(UserEntity)
-        private readonly userRepo: Repository<UserEntity>,
+        private readonly userRepository: Repository<UserEntity>,
 
         private readonly mediaService: MediaPostgreService,
     ) { }
 
 
-    async createService(userId: string, dto: CreateBarberServiceDto, file?: Express.Multer.File) {
-        const user = await this.userRepo.findOneBy({ id: +userId });
+    async findUserById(id: string): Promise<UserEntity | null> {
 
-        if (!user) {
-            throw new NotFoundException('User not found');
-        }
+        return this.userRepository.findOne({ where: { id: +id } })
 
-        const existing = await this.barberRepo.findOne({ where: { user: { id: user.id } } });
+    }
 
-        if (existing) {
-            throw new BadRequestException('You already have service');
-        }
+    async getServiceBarber(barberId: string): Promise<BarberServiceEntity | null> {
 
-        if (file) {
-            await this.mediaService.uploadUserImage(user.id, file);
-        }
+        return this.barberRepository.findOne({ where: { user: { id: +barberId } } })
 
-        const service = this.barberRepo.create({
+    }
+
+
+    async loadUserImage(id: string, file: Express.Multer.File) {
+
+        this.mediaService.uploadUserImage(+id, file)
+
+    }
+
+    async createService(user: UserEntity | User, dto: CreateBarberServiceDto) {
+        const service = await this.barberRepository.create({
             user,
-            ...dto,
-        });
+            ...dto
+        })
 
-        await this.barberRepo.save(service);
-
-        const userWithMedia = await this.userRepo.findOne({ where: { id: user.id }, relations: ['mediaFiles'] });
-
-        return {
-            service,
-            portfolioPath: userWithMedia?.mediaFiles?.path || null
-        };
+        return this.barberRepository.save(service)
     }
 
 
-    async updateService(userId: string, dto: UpdateBarberServiceDto, file?: Express.Multer.File) {
-        const service = await this.barberRepo.findOne({ where: { user: { id: +userId } }, relations: ['user'] });
 
-        if (!service) {
-            throw new NotFoundException('Service not found');
-        }
+    async findServiceByUserId(userId: string): Promise<BarberServiceEntity | null> {
 
-        if (file) {
-            await this.mediaService.uploadUserImage(+userId, file);
-        }
-
-        Object.assign(service, dto);
-
-        await this.barberRepo.save(service);
-
-        const userWithMedia = await this.userRepo.findOne({ where: { id: +userId }, relations: ['mediaFiles'] });
-
-        return {
-            service,
-            portfolioPath: userWithMedia?.mediaFiles?.path || null
-        };
+        return this.barberRepository.findOne({ where: { user: { id: +userId } }, relations: ['user'] })
     }
 
 
-    async findAllBarbers() {
-        return this.userRepo.find({ where: { role: status.BARBER } });
+    async updateService(service: BarberServiceEntity, dto: UpdateBarberServiceDto): Promise<BarberServiceEntity> {
+
+        Object.assign(service, dto)
+
+        return this.barberRepository.save(service)
     }
 
 
-    async findOneBarber(userId: string) {
-        const barber = await this.userRepo.findOne({ where: { id: +userId, role: status.BARBER } });
+    async removeService(service: BarberServiceEntity): Promise<void> {
 
-        if (!barber) {
-            throw new NotFoundException('Barber not found');
-        }
-
-        return barber;
+        await this.barberRepository.remove(service)
     }
 
 
-    async removeService(userId: string) {
-        const service = await this.barberRepo.findOne({ where: { user: { id: +userId } } });
+    async getUserWithMedia(userId: string): Promise<UserEntity | null> {
 
-        if (!service) {
-            throw new NotFoundException('Service not found');
-        }
-
-        await this.barberRepo.remove(service);
-
-        return { message: 'Service deleted' };
+        return this.userRepository.findOne({ where: { id: +userId }, relations: ['mediaFiles'] })
     }
 
 
-    async getMyService(userId: string) {
-        const service = await this.barberRepo.findOne({ where: { user: { id: +userId } }, relations: ['user'], });
+    async getAllServices(): Promise<BarberServiceEntity[]> {
 
-        if (!service) return null;
-
-        const userWithMedia = await this.userRepo.findOne({ where: { id: +userId }, relations: ['mediaFiles'] });
-
-        return {
-            ...service,
-            portfolioImage: userWithMedia?.mediaFiles?.path || null
-        };
+        return this.barberRepository.find({ relations: ['user'] })
     }
 
 
-    async getAllServices() {
-        return this.barberRepo.find({ relations: ['user'] });
+    async getOneService(serviceId: string): Promise<BarberServiceEntity | null> {
+
+        return this.barberRepository.findOne({ where: { id: +serviceId }, relations: ['user'] })
     }
 
 
-    async getOneService(serviceId: string) {
-        const service = await this.barberRepo.findOne({ where: { id: +serviceId }, relations: ['user'] });
+    async findAllBarbers(): Promise<UserEntity[]> {
 
-        if (!service) {
-            throw new NotFoundException('Service not found');
-        }
-
-        const userWithMedia = await this.userRepo.findOne({ where: { id: service.user.id }, relations: ['mediaFiles'] });
-
-        return {
-            ...service,
-            portfolioImage: userWithMedia?.mediaFiles?.path || null
-        };
+        return this.userRepository.find({ where: { role: status.BARBER } })
     }
-
 
 }

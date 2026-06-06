@@ -11,9 +11,6 @@ export class MediaFilesEntity extends Base {
     @Column()
     size: number;
 
-    @Column({
-        type: 'jsonb',
-        nullable: true
-    })
+    @Column({type: 'jsonb',nullable: true})
     meta: Object
 }

@@ -18,13 +18,13 @@ export class AppointmentService {
     const appointment = await this.appointmentRepo.findAppointmentById(appointmentId)
 
     if (!appointment) {
-      throw new NotFoundException('appointment not found')
+      throw new NotFoundException('APPOINTMENT_NOT_FOUND')
     }
 
     const appointmentClientId = appointment.client.id.toString() || appointment.client._id.toString()
 
     if (appointmentClientId !== clientId) {
-      throw new NotFoundException('appointment not found')
+      throw new NotFoundException('APPOINTMENT_NOT_FOUND')
     }
 
     await this.appointmentRepo.removeAppointment(
@@ -42,7 +42,7 @@ export class AppointmentService {
     const user = await this.appointmentRepo.findUserById(userId)
 
     if (!user) {
-      throw new NotFoundException('user not found')
+      throw new NotFoundException('USER_NOT_FOUND')
     }
 
     if (user.role === status.BARBER) {

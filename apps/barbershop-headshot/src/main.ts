@@ -2,6 +2,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
+import { TranslationExceptionFilter } from '@app/common/exception_filter';
 import { AppModule } from './app.module';
 
 
@@ -18,6 +19,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useGlobalFilters(app.get(TranslationExceptionFilter))
 
   const config = new DocumentBuilder().setTitle('Nest Cource API').setDescription(
     'API documentation for nestjs cource').setVersion('1.0.0').setContact(

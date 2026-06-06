@@ -6,39 +6,29 @@ import { UserEntity } from "./users-entity";
 
 @Entity('appointments')
 export class AppointmentEntity extends Base {
-    @ManyToOne(
-        () => UserEntity,
-        (user) => user.clientAppointments,
-        { onDelete: 'CASCADE' },
-    )
+    @ManyToOne(() => UserEntity, (user) => user.clientAppointments, { onDelete: 'CASCADE' })
     client: UserEntity;
 
-    @ManyToOne(
-        () => BarberServiceEntity,
-        (barber) => barber.appointments,
-        { onDelete: 'CASCADE' },
-    )
+    @ManyToOne(() => BarberServiceEntity, (barber) => barber.appointments, { onDelete: 'CASCADE' })
     barber: BarberServiceEntity;
 
     @Column()
     service: string;
 
-    @Column({
-        type: 'timestamp',
-    })
+    @Column({ type: 'timestamp' })
     date: Date;
 
     @Column({
         type: 'enum',
         enum: AppointmentStatus,
-        default: AppointmentStatus.PENDING,
+        default: AppointmentStatus.PENDING
     })
     status: AppointmentStatus;
 
     @Column({
         type: 'enum',
         enum: endOrder,
-        nullable: true,
+        nullable: true
     })
     end_of_order: endOrder | null;
 }

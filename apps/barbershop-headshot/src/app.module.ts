@@ -1,9 +1,14 @@
-import { mongoConfig, jwtConfig, awsConfig, redisConfig, googleClientConfig } from '@app/common/config';
+import { mongoConfig, jwtConfig, awsConfig, redisConfig, googleClientConfig, dbConfig } from '@app/common/config';
 import { LoggerMiddleware } from '@app/common/middleware/logger.middleware';
 import { RedisModule } from '@app/common/redis/redis.module';
 import { validationSchema } from '@app/common/validation';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { UserEntity, AdminEntity, BarberServiceEntity, AppointmentEntity, SecretCode, MediaFilesEntity } from '@app/common/database/entities';
+import { UserSecurityEntity } from '@app/common/database/entities/user.secutity.entity';
 import { AppointmentModule } from './resources/appointment/appointment.module';
+import { TranslationExceptionFilter } from '@app/common/exception_filter';
+import { TranslationService } from '@app/common/i18n/TranslationService';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GoogleStrategy } from '@app/common/strategy/google.strategy';
 import { BarbersModule } from './resources/barbers/barbers.module';
@@ -11,9 +16,8 @@ import { EmailModule } from 'libs/common/email/email.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { smtpConfig } from '@app/common/config/smtp-config';
 import { AuthModule } from './resources/auth/auth.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
-import { User, UserSchema } from '@app/common';
+import { IDBConfig } from '@app/common/models';
 import { AppService } from './app.service';
 
 
@@ -21,34 +25,36 @@ import { AppService } from './app.service';
   imports: [
     EmailModule,
     RedisModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    TypeOrmModule.forFeature([UserEntity, MediaFilesEntity, UserSecurityEntity]),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema,
-      load: [mongoConfig, jwtConfig, awsConfig, redisConfig, smtpConfig, googleClientConfig],
+      load: [mongoConfig, jwtConfig, awsConfig, redisConfig, smtpConfig, googleClientConfig, dbConfig],
     }),
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        const mongo = config.get('mongo');
-        if (!mongo) {
-          throw new Error('Mongo config not found');
-        }
+      useFactory: (configService: ConfigService) => {
+        const dbConfig: IDBConfig = configService.get("DB_CONFIG") as IDBConfig;
         return {
-          uri: mongo.uri,
-          dbName: mongo.dbName,
-          retryAttempts: 5,
-          retryDelay: 3000,
-          serverSelectionTimeoutMS: 5000,
-        };
-      },
+          type: 'postgres',
+          host: dbConfig.host,
+          port: dbConfig.port,
+          username: dbConfig.username,
+          password: dbConfig.password,
+          database: dbConfig.database,
+          entities: [UserEntity, AdminEntity, BarberServiceEntity, AppointmentEntity, UserSecurityEntity, SecretCode, MediaFilesEntity],
+          synchronize: true,
+        }
+      }
     }),
     AppointmentModule,
     BarbersModule,
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, GoogleStrategy],
+  providers: [AppService, GoogleStrategy, TranslationExceptionFilter, TranslationService],
+  exports: [TranslationExceptionFilter]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) { consumer.apply(LoggerMiddleware).forRoutes('*'); }

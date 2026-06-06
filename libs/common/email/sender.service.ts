@@ -11,18 +11,18 @@ import { ISmtpConfig } from '@app/common/models';
 @Injectable()
 export class SenderService implements OnModuleInit {
 
-    private transporter!: Transporter;
+    private transporter!: Transporter
 
     constructor(
         private readonly templateService: TemplateService,
-        private readonly configService: ConfigService,
+        private readonly configService: ConfigService
     ) { }
 
     async onModuleInit() {
-        const smtp = this.configService.get<ISmtpConfig>('SMTP_CONFIG');
+        const smtp = this.configService.get<ISmtpConfig>('SMTP_CONFIG')
 
         if (!smtp) {
-            throw new Error('SMTP_CONFIG is not loaded');
+            throw new Error('SMTP_CONFIG is not loaded')
         }
 
         this.transporter = nodemailer.createTransport({
@@ -31,26 +31,26 @@ export class SenderService implements OnModuleInit {
             secure: smtp.smtpSecure,
             auth: {
                 user: smtp.smtpUser,
-                pass: smtp.smtpPassword,
-            },
-        });
+                pass: smtp.smtpPassword
+            }
+        })
 
         try {
-            await this.transporter.verify();
-            console.log('SMTP transporter verified');
+            await this.transporter.verify()
+            console.log('SMTP transporter verified')
         } catch (error: any) {
-            console.error('SMTP verification failed:', error.message);
+            console.error('SMTP verification failed:', error.message)
         }
     }
 
     async sendEmail(payload: IMailPayload): Promise<boolean> {
-        const { to, subject, template, context, attachments, from } = payload;
+        const { to, subject, template, context, attachments, from } = payload
 
-        const { html, error } = this.templateService.compile(template, context);
+        const { html, error } = this.templateService.compile(template, context)
 
         if (error) {
-            console.error(`[EMAIL] Template compile failed: ${error}`);
-            return false;
+            console.error(`[EMAIL] Template compile failed: ${error}`)
+            return false
         }
 
         try {
@@ -59,14 +59,14 @@ export class SenderService implements OnModuleInit {
                 to: Array.isArray(to) ? to.join(', ') : to,
                 subject,
                 html,
-                attachments,
+                attachments
             });
 
-            console.log(`Email sent to ${to}`);
-            return true;
+            console.log(`Email sent to ${to}`)
+            return true
         } catch (error: any) {
-            console.error(`[EMAIL] Error sending email: ${error.message}`);
-            return false;
+            console.error(`[EMAIL] Error sending email: ${error.message}`)
+            return false
         }
     }
 }

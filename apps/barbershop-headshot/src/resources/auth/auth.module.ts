@@ -1,17 +1,18 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Module } from '@nestjs/common';
 
-import { BarberServices, BarberServiceSchema, AuthSession, AuthSessionSchema, Appointment, AppointmentSchema, User, UserSchema } from '@app/common';
+import { UserSecurityEntity } from '@app/common/database/entities/user.secutity.entity';
+import { UserEntity, SecretCode } from '@app/common/database/entities';
 import { TokenService } from '@app/common/redis/token/auth.token';
 import { RedisService } from '@app/common/redis/redis.service';
 import { RedisModule } from '@app/common/redis/redis.module';
 import { EmailModule } from 'libs/common/email/email.module';
+import { AuthPostgreRepository } from './repositories';
 import { AuthController } from './auth.controller';
 import { IJWTConfig } from '@app/common/models';
 import { AuthGuard } from '@app/common/guards';
-import { AuthMongoRepository } from './repositories';
 import { AuthService } from './auth.service';
 
 
@@ -34,12 +35,7 @@ import { AuthService } from './auth.service';
         };
       },
     }),
-    MongooseModule.forFeature([
-      { name: BarberServices.name, schema: BarberServiceSchema },
-      { name: AuthSession.name, schema: AuthSessionSchema },
-      { name: Appointment.name, schema: AppointmentSchema },
-      { name: User.name, schema: UserSchema },
-    ]),
+    TypeOrmModule.forFeature([UserEntity, SecretCode, UserSecurityEntity]),
   ],
   providers: [
     TokenService,
@@ -48,7 +44,7 @@ import { AuthService } from './auth.service';
     AuthGuard,
     {
       provide: 'AUTH_REPOSITORY',
-      useClass: AuthMongoRepository
+      useClass: AuthPostgreRepository
     }
   ],
   controllers: [AuthController],

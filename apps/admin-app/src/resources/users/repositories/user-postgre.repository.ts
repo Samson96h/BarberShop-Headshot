@@ -1,72 +1,81 @@
-// import { Injectable, NotFoundException } from "@nestjs/common";
-// import { InjectRepository } from "@nestjs/typeorm";
-// import { Repository } from "typeorm";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 
-// import { UserSecurityEntity } from "@app/common/database/entities/user.secutity.entity";
-// import { IUserRepository } from "../interfaces/user.repositori";
-// import { UserEntity } from "@app/common/database/entities";
-// import { status } from "@app/common";
-
-
-// @Injectable()
-// export class UserPostgreRepository implements IUserRepository {
-
-//     constructor(
-//         @InjectRepository(UserEntity)
-//         private readonly userRepository: Repository<UserEntity>,
-
-//         @InjectRepository(UserSecurityEntity)
-//         private readonly securityrepository: Repository<UserSecurityEntity>
-
-//     ) { }
+import { UserSecurityEntity } from "@app/common/database/entities/user.secutity.entity";
+import { AdminEntity, UserEntity } from "@app/common/database/entities";
+import { IUserRepository } from "../interfaces/user.repositori";
+import { status } from "@app/common";
 
 
-//     async getAllBarbers(): Promise<UserEntity[]> {
-//         return this.userRepository.find({ where: { role: status.BARBER } })
-//     }
+@Injectable()
+export class UserPostgreRepository implements IUserRepository {
+
+    constructor(
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
+
+        @InjectRepository(UserSecurityEntity)
+        private readonly securityrepository: Repository<UserSecurityEntity>,
+
+        @InjectRepository(AdminEntity)
+        private readonly adminRepository: Repository<AdminEntity>
+
+    ) { }
 
 
-//     async getAllClients(): Promise<UserEntity[]> {
-//         return this.userRepository.find({ where: { role: status.CLIENT } })
-//     }
+    async getOneAdmin(adminId: string): Promise<AdminEntity | null> {
+
+        return this.adminRepository.findOne({ where: { id: +adminId } })
+    }
 
 
-//     async getOneUser(id: string): Promise<UserEntity> {
-//         const user = await this.userRepository.findOne({ where: { id: +id } })
+    async getAllAdmins(): Promise<AdminEntity[]> {
 
-//         if (!user) throw new NotFoundException('user not found')
-
-//         return user
-//     }
+        return this.adminRepository.find()
+    }
 
 
-//     async deleteUser(userId: string): Promise<any> {
-//         const user = await this.userRepository.findOne({ where: { id: +userId } })
+    async getAllBarbers(): Promise<UserEntity[]> {
 
-//         if (!user) throw new NotFoundException('user not found')
-
-//         return this.userRepository.delete(user.id)
-//     }
+        return this.userRepository.find({ where: { role: status.BARBER } })
+    }
 
 
-//     async unlockesUser(userId: string): Promise<any> {
-//         const user = await this.userRepository.findOne({ where: { id: +userId } })
+    async getAllClients(): Promise<UserEntity[]> {
 
-//         if (!user) throw new NotFoundException('user not found')
+        return this.userRepository.find({ where: { role: status.CLIENT } })
+    }
 
-//         const userSecurity = await this.securityrepository.findOne({ where: { user } })
 
-//         if (!userSecurity) throw new NotFoundException('user dont has security')
+    async getUserById(id: string): Promise<UserEntity | null> {
 
-//         user.isActive = true
-//         this.userRepository.save(user)
+        return this.userRepository.findOne({ where: { id: +id } })
+    }
 
-//         userSecurity.blockedUntil = null
-//         userSecurity.attemptsCount = 0
-//         userSecurity.blockCount = 0
 
-//         return this.securityrepository.save(userSecurity)
+    async deleteUser(userId: string): Promise<void> {
 
-//     }
+        await this.userRepository.delete(+userId)
+    }
 
-// }
+
+    async findSecurityByUserId(userId: string): Promise<UserSecurityEntity | null> {
+
+        return this.securityrepository.findOne({ where: { user: { id: +userId } } })
+
+    }
+
+
+    async saveUser(user: UserEntity): Promise<UserEntity> {
+
+        return this.userRepository.save(user)
+
+    }
+
+
+    async saveSecurity(security: UserSecurityEntity): Promise<UserSecurityEntity> {
+        return this.securityrepository.save(security)
+    }
+
+}

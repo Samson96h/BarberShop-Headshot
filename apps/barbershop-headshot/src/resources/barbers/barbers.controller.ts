@@ -59,6 +59,6 @@ export class BarbersController {
 
   @Get('service/:id')
   getOneService(@Param() params: IdDTO) {
-    return this.barbersService.getOneService(params.id);
+    return this.barbersService.getOneService(params.id)
   }
 }

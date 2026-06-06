@@ -1,92 +1,71 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { BarberServiceEntity, UserEntity } from '@app/common/database/entities';
 import type { IBarberRepository } from './interfaces/barber.repository';
-import { status } from '@app/common';
 
 
 @Injectable()
-export class BarbersService implements IBarberRepository {
+export class BarbersService {
 
   constructor(
-    @InjectRepository(BarberServiceEntity)
-    private readonly barberRepository: Repository<BarberServiceEntity>,
-
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    @Inject('BARBER_REPOSITORY')
+    private readonly barberRepository: IBarberRepository
   ) { }
 
-  async findAllBarbers(): Promise<UserEntity[]> {
-    return this.userRepository.find({ where: { role: status.BARBER } });
+
+  async findAllBarbers() {
+
+    return this.barberRepository.findAllBarbers()
+
   }
 
 
-  async findOneBarber(userId: string): Promise<UserEntity> {
+  async findOneBarber(userId: string) {
 
-    const barber = await this.userRepository.findOne({
-      where: { id: +userId, role: status.BARBER }
-    })
+    const barber = await this.barberRepository.findBarberById(userId)
+
+    if (!barber) throw new NotFoundException('BARBER_NOT_FOUND')
+
+    return barber
+  }
+
+
+  async getAllServices() {
+
+    return this.barberRepository.getAllServices()
+
+  }
+
+
+  async getOneServices(serviceId: string) {
+
+    const service = await this.barberRepository.findServiceById(serviceId)
+
+    if (!service) throw new NotFoundException('SERVICE_NOT_FOUND')
+
+
+    return service
+
+  }
+
+
+  async removeService(userId: string) {
+
+    const barber = await this.barberRepository.findBarberById(userId)
 
     if (!barber) {
-      throw new NotFoundException('barber not found');
+      throw new NotFoundException('BARBER_NOT_FOUND');
     }
 
-    return barber;
-  }
-
-
-  async getAllServices(): Promise<BarberServiceEntity[]> {
-
-    return this.barberRepository.find({
-      relations: ['user']
-    });
-  }
-
-
-  async getOneServices(userId: string): Promise<BarberServiceEntity> {
-
-    const service = await this.barberRepository.findOne({
-      where: {
-        id: +userId
-      },
-      relations: ['user']
-    });
-
+    const service = await this.barberRepository.findServiceById(userId)
 
     if (!service) {
-      throw new NotFoundException('service not found');
+      throw new NotFoundException('SERVICE_NOT_FOUND')
     }
 
-    return service;
-  }
+    await this.barberRepository.removeService(service.id.toString())
 
-
-  async removeService(userId: string): Promise<{ message: string }> {
-
-    const user = await this.userRepository.findOne({
-      where: { id: +userId }
-    });
-
-    if (!user) {
-      throw new NotFoundException('user not found');
+    return {
+      message: 'Service deleted successfully'
     }
-
-    const service = await this.barberRepository.findOne({
-      where: {
-        user: {
-          id: user.id
-        }
-      }
-    });
-
-    if (!service) {
-      throw new NotFoundException('service not found');
-    }
-
-    await this.barberRepository.delete(service.id);
-
-    return { message: 'Server deleted successfully' }
   }
 }

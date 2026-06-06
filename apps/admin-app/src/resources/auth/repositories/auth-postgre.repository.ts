@@ -1,80 +1,42 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { IJWTConfig } from "@app/common/models";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
 import { Repository } from "typeorm";
-import * as bcrypt from 'bcrypt';
 
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { IAuthRepository } from "../interfaces/auth.repository";
 import { AdminEntity } from "@app/common/database/entities";
-import { AdminLoginDTO, CreateAdminDTO } from "../dto";
 
 
 @Injectable()
 export class AuthPostgreRepository implements IAuthRepository {
 
-    private jwtConfig: IJWTConfig;
-
     constructor(
         @InjectRepository(AdminEntity)
-        private readonly adminRepository: Repository<AdminEntity>,
-        private readonly configService: ConfigService,
-        private readonly jwtService: JwtService,
-    ) {
-        this.jwtConfig = this.configService.get("JWT_CONFIG") as IJWTConfig
-    }
+        private readonly adminRepository: Repository<AdminEntity>
 
-    async adminLogin(dto: AdminLoginDTO): Promise<{ message: any; token: any; }> {
-        const admin = await this.adminRepository.findOne({ where: { login: dto.login } })
+    ) { }
 
-        if (!admin) throw new NotFoundException('admin not found')
+    async findAdminByLogin(login: string): Promise<AdminEntity | null> {
 
-        const isPasswordValid = await bcrypt.compare(
-            dto.password,
-            admin.password,
-        );
-
-        if (!isPasswordValid) {
-            throw new NotFoundException('invalid credentials');
-        }
-
-        const token = this.jwtService.sign(
-            {
-                sub: admin.id.toString(),
-                login: dto.login,
-                temp: true,
-            },
-            {
-                secret: this.jwtConfig.adminSecret,
-                expiresIn: '1d',
-            },
-        );
-
-        return {
-            message: `hello ${admin.name}`,
-            token
-        };
+        return this.adminRepository.findOne({ where: { login } })
     }
 
 
-    async createAdmin(id: string, dto: CreateAdminDTO): Promise<any> {
-        const admin = await this.adminRepository.findOne({ where: { id: +id } })
+    async findAdminById(id: string): Promise<AdminEntity | null> {
 
-        if (!admin) {
-            throw new NotFoundException('admin not found')
-        }
+        return this.adminRepository.findOne({ where: { id: +id } })
+    }
 
-        if (admin.name != 'Super admin') {
-            throw new ForbiddenException("You do not have permission to create a new admin.")
-        }
 
-        const newAdmin = await this.adminRepository.create({
-            name: dto.name,
-            login: dto.login,
-            password: await bcrypt.hash(dto.password, 12)
-        })
+    createAdmin(data: Partial<AdminEntity>): AdminEntity {
 
-        return this.adminRepository.save(newAdmin)
+        return this.adminRepository.create(data)
+    }
+    
+
+    async saveAdmin(admin: AdminEntity): Promise<AdminEntity> {
+
+        return this.adminRepository.save(admin)
+
     }
 }

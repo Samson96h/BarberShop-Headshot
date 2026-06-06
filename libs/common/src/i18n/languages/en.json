@@ -1,0 +1,16 @@
+{
+  "THE_APPOINTMENT_DOES_NOT_BELONG_TO_YOU": "The appointment does not belong to you",
+  "YOU_ARE_TEMPORARILY_BLOCKED": "You are temporarily blocked for 15 minutes",
+  "YOU_ALREADY_HAVE_SERVICE": "You already have this service",
+  "USER_PERMANENTLY_BLOCKED": "User is permanently blocked",
+  "APPOINTMENT_NOT_FOUND": "Appointment not found",
+  "EMAIL_ALREADY_EXISTS": "Email already exists",
+  "SERVICE_NOT_FOUND": "Service not found",
+  "INVALID_PASSWORD": "Invalid password",
+  "BARBER_NOT_FOUND": "Barber not found",
+  "USER_NOT_FOUND": "User not found",
+
+  "YOU_DONT_HAVE_ACCESS_RIGHTS": "Sorry, you don't have access rights.",
+  "USER_DONT_HAS_SECURITY": "user dont has security",
+  "ADMIN_NOT_FOUND": "Admin not found"
+}

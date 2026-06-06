@@ -1,8 +1,8 @@
-import { IdDTO } from '@app/common/dto';
-
 import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
+
 import { AdminAuthGuard } from '@app/common/guards/admin-auth.guard';
 import { BarbersService } from './barbers.service';
+import { IdDTO } from '@app/common/dto';
 
 
 @UseGuards(AdminAuthGuard)

@@ -5,11 +5,7 @@ import { UserEntity } from "./users-entity";
 
 @Entity('barber_services')
 export class BarberServiceEntity extends Base {
-    @OneToOne(
-        () => UserEntity,
-        (user) => user.barberProfile,
-        { onDelete: 'CASCADE' },
-    )
+    @OneToOne(() => UserEntity, (user) => user.barberProfile, { onDelete: 'CASCADE' })
     @JoinColumn()
     user: UserEntity;
 
@@ -25,9 +21,6 @@ export class BarberServiceEntity extends Base {
     @Column({ nullable: true })
     experience: number;
 
-    @OneToMany(
-        () => AppointmentEntity,
-        (appointment) => appointment.barber,
-    )
+    @OneToMany(() => AppointmentEntity, (appointment) => appointment.barber)
     appointments: AppointmentEntity[];
 }

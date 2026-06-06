@@ -1,160 +1,160 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { Appointment, endOrder, User } from "@app/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { SenderService } from "libs/common/email/sender.service";
-import { IAppointmentRepository } from "../interfaces/appointment.repository";
-import { status } from "@app/common";
-import { CreateAppointmentDto, AppointmentStatusDTO, EndOfServiceDTO } from "../dto";
+// import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+// import { Appointment, endOrder, User } from "@app/common";
+// import { InjectModel } from "@nestjs/mongoose";
+// import { Model } from "mongoose";
+// import { SenderService } from "libs/common/email/sender.service";
+// import { IAppointmentRepository } from "../interfaces/appointment.repository";
+// import { status } from "@app/common";
+// import { CreateAppointmentDto, AppointmentStatusDTO, EndOfServiceDTO } from "../dto";
 
 
-@Injectable()
-export class AppointmentMongoRepository implements IAppointmentRepository {
+// @Injectable()
+// export class AppointmentMongoRepository implements IAppointmentRepository {
 
-  constructor(
-    @InjectModel(Appointment.name)
-    private readonly appointmentModel: Model<Appointment>,
+//   constructor(
+//     @InjectModel(Appointment.name)
+//     private readonly appointmentModel: Model<Appointment>,
 
-    @InjectModel(User.name)
-    private readonly userModel: Model<User>,
+//     @InjectModel(User.name)
+//     private readonly userModel: Model<User>,
 
-    private readonly senderService: SenderService
-  ) { }
-
-
-  async createAppointment(
-    clientId: string,
-    dto: CreateAppointmentDto
-  ): Promise<Appointment> {
-
-    return this.appointmentModel.create({
-      client: clientId,
-      barber: dto.barberId,
-      service: dto.service,
-      date: dto.date
-    });
-  }
+//     private readonly senderService: SenderService
+//   ) { }
 
 
-  async removeAppointment(
-    clientId: string,
-    appointmentId: string
-  ) {
+//   async createAppointment(
+//     clientId: string,
+//     dto: CreateAppointmentDto
+//   ): Promise<Appointment> {
 
-    const appointment = await this.appointmentModel
-      .findById(appointmentId)
-      .populate("client");
-
-    if (!appointment) {
-      throw new NotFoundException("appointment not found");
-    }
-
-    if (appointment.client._id.toString() !== clientId) {
-      throw new ForbiddenException("You cannot delete this appointment");
-    }
-
-    return this.appointmentModel.findByIdAndDelete(appointmentId);
-  }
-
-  async acceptedOrRejected(
-    barberId: string,
-    appointmentId: string,
-    dto: AppointmentStatusDTO,
-  ) {
-    const appointment = await this.appointmentModel.findById(appointmentId);
-
-    if (!appointment) {
-      throw new NotFoundException('Appointment not found');
-    }
-
-    if (!appointment.barber) {
-      throw new BadRequestException('Invalid appointment data');
-    }
-
-    if (appointment.barber.toString() !== barberId) {
-      throw new ForbiddenException('You cannot update this appointment');
-    }
-
-    appointment.status = dto.status;
-
-    return appointment.save();
-  }
+//     return this.appointmentModel.create({
+//       client: clientId,
+//       barber: dto.barberId,
+//       service: dto.service,
+//       date: dto.date
+//     });
+//   }
 
 
-  async getAppointmentsForBarber(barberId: string): Promise<Appointment[]> {
+//   async removeAppointment(
+//     clientId: string,
+//     appointmentId: string
+//   ) {
 
-    return this.appointmentModel
-      .find({ barber: barberId })
-      .populate("client")
-  }
+//     const appointment = await this.appointmentModel
+//       .findById(appointmentId)
+//       .populate("client");
+
+//     if (!appointment) {
+//       throw new NotFoundException("appointment not found");
+//     }
+
+//     if (appointment.client._id.toString() !== clientId) {
+//       throw new ForbiddenException("You cannot delete this appointment");
+//     }
+
+//     return this.appointmentModel.findByIdAndDelete(appointmentId);
+//   }
+
+//   async acceptedOrRejected(
+//     barberId: string,
+//     appointmentId: string,
+//     dto: AppointmentStatusDTO,
+//   ) {
+//     const appointment = await this.appointmentModel.findById(appointmentId);
+
+//     if (!appointment) {
+//       throw new NotFoundException('Appointment not found');
+//     }
+
+//     if (!appointment.barber) {
+//       throw new BadRequestException('Invalid appointment data');
+//     }
+
+//     if (appointment.barber.toString() !== barberId) {
+//       throw new ForbiddenException('You cannot update this appointment');
+//     }
+
+//     appointment.status = dto.status;
+
+//     return appointment.save();
+//   }
 
 
-  async getAppointmentsForClient(clientId: string): Promise<Appointment[]> {
+//   async getAppointmentsForBarber(barberId: string): Promise<Appointment[]> {
 
-    return this.appointmentModel
-      .find({ client: clientId })
-  }
+//     return this.appointmentModel
+//       .find({ barber: barberId })
+//       .populate("client")
+//   }
 
 
-  async getAppointmentsForUser(userId: string) {
+//   async getAppointmentsForClient(clientId: string): Promise<Appointment[]> {
 
-    const user = await this.userModel.findById(userId);
+//     return this.appointmentModel
+//       .find({ client: clientId })
+//   }
 
-    if (!user) {
-      throw new NotFoundException("user not found");
-    }
 
-    if (user.role === status.BARBER) {
-      return this.getAppointmentsForBarber(userId);
-    }
+//   async getAppointmentsForUser(userId: string) {
 
-    return this.getAppointmentsForClient(userId);
-  }
+//     const user = await this.userModel.findById(userId);
 
-  async endOfOrder(barberId: string, dto: EndOfServiceDTO) {
-    const { appointmentId, result, priceOfWork } = dto;
+//     if (!user) {
+//       throw new NotFoundException("user not found");
+//     }
 
-    const appointment = await this.appointmentModel
-      .findById(appointmentId)
-      .populate('client');
+//     if (user.role === status.BARBER) {
+//       return this.getAppointmentsForBarber(userId);
+//     }
 
-    if (!appointment) {
-      throw new NotFoundException('Appointment not found!');
-    }
+//     return this.getAppointmentsForClient(userId);
+//   }
 
-    if (!appointment.barber) {
-      throw new BadRequestException('Invalid appointment');
-    }
+//   async endOfOrder(barberId: string, dto: EndOfServiceDTO) {
+//     const { appointmentId, result, priceOfWork } = dto;
 
-    if (appointment.barber.toString() !== barberId) {
-      throw new ForbiddenException('This appointment is not yours');
-    }
+//     const appointment = await this.appointmentModel
+//       .findById(appointmentId)
+//       .populate('client');
 
-    const price = result === endOrder.END ? priceOfWork : 0;
+//     if (!appointment) {
+//       throw new NotFoundException('Appointment not found!');
+//     }
 
-    const updated = await this.appointmentModel.findByIdAndUpdate(
-      appointmentId,
-      {
-        $set: { end_of_order: result },
-      },
-      { new: true },
-    );
+//     if (!appointment.barber) {
+//       throw new BadRequestException('Invalid appointment');
+//     }
 
-    const client = appointment.client as any;
+//     if (appointment.barber.toString() !== barberId) {
+//       throw new ForbiddenException('This appointment is not yours');
+//     }
 
-    if (client.email) {
-      await this.senderService.sendEmail({
-        to: client.email,
-        from: process.env.SMTP_FROM || 'no-reply@example.com',
-        subject: 'Here is your receipt!',
-        template: 'service_receipt',
-        context: {
-          name: client.firstName || 'User',
-          price,
-        },
-      });
-    }
+//     const price = result === endOrder.END ? priceOfWork : 0;
 
-    return updated;
-  }
-}
+//     const updated = await this.appointmentModel.findByIdAndUpdate(
+//       appointmentId,
+//       {
+//         $set: { end_of_order: result },
+//       },
+//       { new: true },
+//     );
+
+//     const client = appointment.client as any;
+
+//     if (client.email) {
+//       await this.senderService.sendEmail({
+//         to: client.email,
+//         from: process.env.SMTP_FROM || 'no-reply@example.com',
+//         subject: 'Here is your receipt!',
+//         template: 'service_receipt',
+//         context: {
+//           name: client.firstName || 'User',
+//           price,
+//         },
+//       });
+//     }
+
+//     return updated;
+//   }
+// }

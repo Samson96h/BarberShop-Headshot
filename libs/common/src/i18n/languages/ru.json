@@ -1,0 +1,15 @@
+{
+    "YOU_ARE_TEMPORARILY_BLOCKED": "Вы временно заблокированы на 15 минут",
+    "THE_APPOINTMENT_DOES_NOT_BELONG_TO_YOU": "Запись не принадлежит вам",
+    "EMAIL_ALREADY_EXISTS": "Пользователь с таким email уже существует",
+    "USER_PERMANENTLY_BLOCKED": "Пользователь заблокирован навсегда",
+    "YOU_ALREADY_HAVE_SERVICE": "У вас уже есть эта услуга",
+    "APPOINTMENT_NOT_FOUND": "Запись не найдена",
+    "USER_NOT_FOUND": "Пользователь не найден",
+    "SERVICE_NOT_FOUND": "Услуга не найдена",
+    "BARBER_NOT_FOUND": "Барбер не найден",
+    "INVALID_PASSWORD": "Неверный пароль",
+    "YOU_DONT_HAVE_ACCESS_RIGHTS": "Извините, у вас нет прав доступа.",
+    "USER_DONT_HAS_SECURITY": "У пользователя отсутствуют настройки безопасности.",
+    "ADMIN_NOT_FOUND": "Администратор не найден"
+}

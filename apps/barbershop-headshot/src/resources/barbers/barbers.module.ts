@@ -1,30 +1,26 @@
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
-import { BarberServices, BarberServiceSchema, UserImage, UserImageSchema, User, UserSchema } from '@app/common';
-import { BarbersMongoRepository } from './repositories/barber-mongo.repository';
+import { BarberServiceEntity, MediaFilesEntity, UserEntity } from '@app/common/database/entities';
+import { BarberPostgreRepository } from './repositories/barber-postgre.repository';
+import { MediaPostgreService } from './services/media-postgre.service';
 import { S3Module } from '@app/common/shared/s3/s3.module';
 import { BarbersController } from './barbers.controller';
 import { BarbersService } from './barbers.service';
 import { AuthModule } from '../auth/auth.module';
-import { MediaMongoService } from './services/media-mongo.service';
 
 
 @Module({
   imports: [
     S3Module,
     AuthModule,
-    MongooseModule.forFeature([
-      { name: BarberServices.name, schema: BarberServiceSchema },
-      { name: UserImage.name, schema: UserImageSchema },
-      { name: User.name, schema: UserSchema },
-    ]),
+    TypeOrmModule.forFeature([UserEntity, BarberServiceEntity, MediaFilesEntity]),
   ],
   controllers: [BarbersController],
-  providers: [BarbersService,MediaMongoService,BarbersMongoRepository,
+  providers: [BarbersService, MediaPostgreService, BarberPostgreRepository,
     {
       provide: 'BARBER_REPOSITORY',
-      useClass: BarbersMongoRepository
+      useClass: BarberPostgreRepository
     }
   ],
 })

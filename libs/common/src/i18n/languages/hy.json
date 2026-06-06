@@ -1,0 +1,15 @@
+{
+    "YOU_ARE_TEMPORARILY_BLOCKED": "Դուք ժամանակավորապես արգելափակված եք 15 րոպեով",
+    "THE_APPOINTMENT_DOES_NOT_BELONG_TO_YOU": "Գրանցումը ձեզ չի պատկանում",
+    "EMAIL_ALREADY_EXISTS": "Այս email-ով օգտատեր արդեն գոյություն ունի",
+    "YOU_ALREADY_HAVE_SERVICE": "Դուք արդեն ունեք այս ծառայությունը",
+    "USER_PERMANENTLY_BLOCKED": "Օգտատերը մշտապես արգելափակված է",
+    "APPOINTMENT_NOT_FOUND": "Գրանցումը չի գտնվել",
+    "SERVICE_NOT_FOUND": "Ծառայությունը չի գտնվել",
+    "BARBER_NOT_FOUND": "Վարսավիրը չի գտնվել",
+    "USER_NOT_FOUND": "Օգտատերը չի գտնվել",
+    "INVALID_PASSWORD": "Սխալ գաղտնաբառ",
+    "YOU_DONT_HAVE_ACCESS_RIGHTS": "Ներեցեք, դուք չունեք մուտքի իրավունքներ։",
+    "USER_DONT_HAS_SECURITY": "Օգտատիրոջ անվտանգության կարգավորումները բացակայում են։",
+    "ADMIN_NOT_FOUND": "Ադմինիստրատորը չի գտնվել"
+}

@@ -5,8 +5,13 @@ import { Admin } from "@app/common/database";
 
 export interface IAuthRepository {
 
-    adminLogin(dto: AdminLoginDTO): Promise<{ message: string, token: string }>;
-    
-    createAdmin(id: string, dto: CreateAdminDTO): Promise<AdminEntity | Admin>;
-    
+
+    findAdminByLogin(login: string): Promise<AdminEntity | null>;
+
+    findAdminById(id: string): Promise<AdminEntity | null>;
+
+    saveAdmin(admin: AdminEntity): Promise<AdminEntity>;
+
+    createAdmin(data: Partial<AdminEntity>): AdminEntity;
+
 }

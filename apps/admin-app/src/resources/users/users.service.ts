@@ -1,91 +1,101 @@
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
-import { UserSecurityEntity } from '@app/common/database/entities/user.secutity.entity';
-import type { IUserRepository } from './interfaces/user.repositori';
 import { AdminEntity, UserEntity } from '@app/common/database/entities';
-import { status } from '@app/common/database';
+import type { IUserRepository } from './interfaces/user.repositori';
 
 
 @Injectable()
-export class UsersService implements IUserRepository {
-
+export class UsersService {
 
   constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
-
-    @InjectRepository(AdminEntity)
-    private readonly adminRepository: Repository<AdminEntity>,
-
-    @InjectRepository(UserSecurityEntity)
-    private readonly securityrepository: Repository<UserSecurityEntity>
-
+    @Inject('USER_REPOSITORY')
+    private readonly userRepository: IUserRepository
   ) { }
 
 
   async getAllBarbers(): Promise<UserEntity[]> {
-    return this.userRepository.find({ where: { role: status.BARBER } })
+
+    return this.userRepository.getAllBarbers()
   }
 
 
   async getAllClients(): Promise<UserEntity[]> {
-    return this.userRepository.find({ where: { role: status.CLIENT } })
+
+    return this.userRepository.getAllClients()
   }
 
 
   async getOneUser(id: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { id: +id } })
 
-    if (!user) throw new NotFoundException('user not found')
+    const user = await this.userRepository.getUserById(id)
+
+    if (!user) {
+      throw new NotFoundException('USER_NOT_FOUND')
+    }
 
     return user
   }
 
 
-  async deleteUser(userId: string): Promise<{message: string}> {
-    const user = await this.userRepository.findOne({ where: { id: +userId } })
+  async deleteUser(userId: string): Promise<{ message: string }> {
 
-    if (!user) throw new NotFoundException('user not found')
+    const user = await this.userRepository.getUserById(userId)
 
-    await this.userRepository.delete(user.id)
+    if (!user) {
+      throw new NotFoundException('USER_NOT_FOUND')
+    }
 
-    return {message: 'Appointment deleted successfully'}
+    await this.userRepository.deleteUser(userId)
+
+    return {
+      message: 'User deleted successfully'
+    }
   }
 
 
   async unlockesUser(userId: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ where: { id: +userId } })
 
-    if (!user) throw new NotFoundException('user not found')
+    const user = await this.userRepository.getUserById(userId)
 
-    const userSecurity = await this.securityrepository.findOne({ where: { user } })
+    if (!user) throw new NotFoundException('USER_NOT_FOUND')
 
-    if (!userSecurity) throw new NotFoundException('user dont has security')
+    const security = await this.userRepository.findSecurityByUserId(userId)
 
-    user.isActive = true
-    this.userRepository.save(user)
-
-    userSecurity.blockedUntil = null
-    userSecurity.attemptsCount = 0
-    userSecurity.blockCount = 0
-
-    await this.securityrepository.save(userSecurity)
-
-    return user
-
-  }
-
-  async getAllAdmins(adminId: string) : Promise<AdminEntity[]> {
-
-    const admin = await this.adminRepository.findOne({where: {id: +adminId}})
-
-    if(admin?.name !== 'Super Admin') {
-      throw new ForbiddenException("Sorry, you don't have access rights.")
+    if (!security) {
+      throw new NotFoundException('USER_DONT_HAS_SECURITY')
     }
 
-    return this.adminRepository.find()
+    user.isActive = true
+
+    security.blockedUntil = null
+    security.attemptsCount = 0
+    security.blockCount = 0
+
+    await this.userRepository.saveUser(user)
+
+    await this.userRepository.saveSecurity(security)
+
+    return user
+  }
+
+
+  async getOneAdmin(adminId: string): Promise<AdminEntity> {
+
+    const admin = await this.userRepository.getOneAdmin(adminId)
+
+    if (!admin) throw new NotFoundException('ADMN_NOT_FOUND')
+
+    return admin
+  }
+
+
+  async getAllAdmins(adminId: string): Promise<AdminEntity[]> {
+
+    const admin = await this.getOneAdmin(adminId)
+
+    if (admin.name !== 'Super Admin')  throw new ForbiddenException( "YOU_DONT_HAVE_ACCESS_RIGHTS")
+
+    return this.userRepository.getAllAdmins()
   }
 
 }
